@@ -7,6 +7,7 @@ author "GalužaCZ#8828"
 version "1.0"
 
 dependencies {
+	"mysql-async",
 	"es_extended",
 }
 
@@ -22,5 +23,6 @@ client_scripts {
 
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
-	'server/main.lua'
+	'server/main.lua',
+	'server/events.lua'
 }

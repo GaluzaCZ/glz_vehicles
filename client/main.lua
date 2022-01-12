@@ -1,8 +1,12 @@
 local ESX = nil
-local vehicles = {}
 local xPlayer
 local MainRun = false -- Make sure to run the main function once
+local vehicles = {
+	identifier = {},
+	job = {}
+}
 
+-- ESX events
 RegisterNetEvent('esx:playerLoaded', function(playerData)
 	xPlayer = playerData
 	if not MainRun then
@@ -34,19 +38,13 @@ Main = function()
 	end
 
 	-- Main thread
-	Citizen.CreateThread(function()
-		-- Get client vehicles from server
-		ESX.TriggerServerCallback('glz:veh_initPlayer', function(result)
-			if result then
-				for _, v in pairs(result) do
-					print(v.identifier, v.firstname, v.lastname)
-					print(xPlayer.identifier, xPlayer.firstname, xPlayer.lastname)
-				end
-			end
-		end)
-	end)
+	-- To do
 end
 
-if not MainRun then
-	Main()
-end
+RegisterNetEvent('glz_veh:syncClient', function(data)
+	if data.identifier then
+		vehicles.identifier = data.identifier
+	elseif data.job then
+		vehicles.job = data.job
+	end
+end)
