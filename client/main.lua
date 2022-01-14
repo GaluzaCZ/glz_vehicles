@@ -1,10 +1,6 @@
-local ESX = nil
-local xPlayer
 local MainRun = false -- Make sure to run the main function once
-local vehicles = {
-	identifier = {},
-	job = {}
-}
+ESX = nil
+xPlayer = nil
 
 -- ESX events
 RegisterNetEvent('esx:playerLoaded', function(playerData)
@@ -22,10 +18,6 @@ RegisterNetEvent('esx:setPlayerData', function(k, v)
 	xPlayer[k] = v
 end)
 
-RegisterNetEvent('esx:onPlayerLogout', function()
-
-end)
-
 Main = function()
 	MainRun = true
 
@@ -38,13 +30,15 @@ Main = function()
 	end
 
 	-- Main thread
-	-- To do
+	GarageInit()
 end
 
-RegisterNetEvent('glz_veh:syncClient', function(data)
-	if data.identifier then
-		vehicles.identifier = data.identifier
-	elseif data.job then
-		vehicles.job = data.job
-	end
-end)
+function pNotify(text,type,time)
+	local options = {
+	  text = text,
+	  timeout = time or 2000,
+	  type = type
+	}
+
+	exports.pNotify:SendNotification(options)
+end

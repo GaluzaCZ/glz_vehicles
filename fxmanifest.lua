@@ -13,16 +13,19 @@ dependencies {
 
 shared_scripts {
 	'@es_extended/locale.lua',
-	'config.lua',
-	'shared/*.lua'
-}
-
-client_scripts {
-	'client/main.lua'
+	'locales/*.lua',
+	'shared/*.lua',
+	'config.lua'
 }
 
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
 	'server/main.lua',
-	'server/events.lua'
+	'server/events.lua',
+}
+
+client_scripts {
+	'client/utils.lua',
+	'client/garage.lua',
+	'client/main.lua',
 }
