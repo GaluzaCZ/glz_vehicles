@@ -20,3 +20,9 @@ Garages = {
 		despawn = vector3(119.1782913208,-1069.7576904297,29.192361831665) -- position for vehicle despawn
 	}
 }
+
+for i, v in ipairs(Garages) do
+	if not v.name then
+		Garages[i].name = "Garage" .. i
+	end
+end

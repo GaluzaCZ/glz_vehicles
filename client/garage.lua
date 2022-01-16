@@ -58,10 +58,6 @@ end)
 GarageInit = function()
 	if Config.Garages.Enabled then
 		for i, v in ipairs(Config.Garages.Garages) do
-			if not v.name then
-				v.name = "Garage"..i
-				Config.Garages.Garages[i].name = v.name
-			end
 			CreateBlip(v.name, _("garage_blip_name"), v.pos, Config.Garages.Blip)
 
 			local Marker = {}
@@ -88,10 +84,6 @@ GarageInit = function()
 
 	if Config.Impounds.Enabled then
 		for i, v in ipairs(Config.Impounds.Impounds) do
-			if not v.name then
-				v.name = "Impound"..i
-				Config.Impounds.Impounds[i].name = v.name
-			end
 			CreateBlip(v.name, _U("impound_blip_name"), v.pos, Config.Impounds.Blip)
 
 			local Marker = {}
@@ -208,12 +200,21 @@ end
 
 SpawnVehicle = function(vehicle, spawnData)
 	ESX.Game.SpawnVehicle(vehicle.vehicle.model, spawnData.spawn, spawnData.heading, function(callback_vehicle)
-		TriggerServerEvent("glz_veh:setVehicleOut", vehicle.plate)
+		TriggerServerEvent("glz_veh:setVehicleStatus", vehicle.plate, 0)
+		SetVehicleNumberPlateText(callback_vehicle, vehicle.vehicle.plate)
 		TaskWarpPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
 	end)
 end
 
 DeSpawnVehicle = function()
+	local data = currentData
 	local vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
-	ESX.Game.DeleteVehicle(vehicle)
+	ESX.TriggerServerCallback("glz_veh:hasPlayerVehicleByPlate", function (has)
+		if has then
+			ESX.Game.DeleteVehicle(vehicle)
+			TriggerServerEvent("glz_veh:setVehicleStatus", vehicle.plate, 1)
+		else
+			pNotify(_U("not_owned"), "error")
+		end
+	end, GetVehicleNumberPlateText(vehicle))
 end

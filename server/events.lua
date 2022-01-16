@@ -1,7 +1,9 @@
 ESX.RegisterServerCallback("glz_veh:getPlayerVehicles", function(source, cb)
 	local Vehicles = {}
-	for i, v in ipairs(vehicles.source[source]) do
-		table.insert(Vehicles, vehicles.plate[v])
+	if vehicles.source[source] then
+		for i, v in ipairs(vehicles.source[source]) do
+			table.insert(Vehicles, vehicles.plate[v])
+		end
 	end
 	cb(Vehicles)
 end)
@@ -16,8 +18,12 @@ ESX.RegisterServerCallback("glz_veh:payForImpound", function(source, cb)
 	end
 end)
 
-RegisterNetEvent('glz_veh:setVehicleOut', function(vehiclePlate)
-	vehicles.plate[vehiclePlate].stored = 0
+ESX.RegisterServerCallback("glz_veh:hasPlayerVehicleByPlate", function(source, cb, plate)
+	cb(vehicles.plate[plate] ~= nil)
+end)
+
+RegisterNetEvent('glz_veh:setVehicleStatus', function(vehiclePlate, status)
+	vehicles.plate[vehiclePlate].stored = tonumber(status)
 end)
 
 RegisterNetEvent('glz_veh:setVehiclePropsOwned', function(vehicleProps, plate, vehName)

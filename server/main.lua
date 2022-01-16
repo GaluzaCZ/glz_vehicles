@@ -19,7 +19,21 @@ RegisterNetEvent('esx:setJob', function(source, job, lastJob)
 	if not connectedJobs[job.name] then
 		connectedJobs[job.name] = {}
 	end
+
 	table.insert(connectedJobs[job.name], source)
+
+	local xPlayer = ESX.GetPlayerFromId(source)
+	if not vehicles.job[job.name] then
+		result = LoadVehiclesFromDatabase(xPlayer, false, true)
+		for i, vehicle in ipairs(result) do
+			if Config.SetVehicleStoredOnServerStart then
+				vehicle.stored = 1
+			end
+
+			InsertVehicle("job", vehicle, xPlayer)
+		end
+	end
+	CheckJobVehicles(lastJob.name)
 end)
 
 RegisterNetEvent('esx:playerLoaded', function(source, xPlayer)
@@ -32,14 +46,19 @@ RegisterNetEvent('esx:playerLoaded', function(source, xPlayer)
 end)
 
 RegisterNetEvent('esx:playerDropped', function(source)
+	local lastJob = nil
 	for job, users in pairs(connectedJobs) do
 		for i, user in ipairs(users) do
 			if user == source then
+				lastJob = job
 				table.remove(connectedJobs[job], i)
 				break -- break loops
 			end
 		end
 	end
+
+	PlayerDropped(source)
+	CheckJobVehicles(lastJob)
 end)
 
 InitPlayer = function(source)
@@ -73,7 +92,7 @@ InitPlayer = function(source)
 end
 
 -- Insert function table.insert()
-InsertVehicle = function(where, vehicle, xPlayer)
+InsertVehicle = function(where, vehicle, xPlayer, override)
 	if where == "source" then
 		if not vehicles.source[xPlayer.source] then
 			vehicles.source[xPlayer.source] = {}
@@ -88,7 +107,9 @@ InsertVehicle = function(where, vehicle, xPlayer)
 		table.insert(vehicles.job[xPlayer.job.name], vehicle.plate)
 	end
 
-	vehicles.plate[vehicle.plate] = vehicle
+	if not vehicles.plate[vehicle.plate] or override then
+		vehicles.plate[vehicle.plate] = vehicle
+	end
 end
 
 LoadVehiclesFromDatabase = function(xPlayer, loadPlayer, loadJob)
@@ -110,4 +131,18 @@ end
 
 SaveNewVehicleToDatabase = function(vehicle)
 	MySQL.insert.await('INSERT INTO owned_vehicles (owner, plate, vehicle, vehiclename) VALUES (?, ?, ?, ?) ', {vehicle.owner, vehicle.plate, json.encode(vehicle.vehicle), vehicle.vehiclename})
+end
+
+CheckJobVehicles = function (job)
+	if #connectedJobs[job] < 1 and vehicles.job[job] then
+		-- to-do: add removing vehicles from vehicles.plate for save energy
+		table.remove(vehicles.job[job])
+	end
+end
+
+PlayerDropped = function(source)
+	if vehicles.source[source] then
+		-- to-do: add removing vehicles from vehicles.plate for save energy
+		table.remove(vehicles.source[source])
+	end
 end

@@ -20,3 +20,9 @@ Impounds = {
         heading = 68.00, -- heading for vehicle spawnpoint, must have point zero zero (.00) at the end
     }
 }
+
+for i, v in ipairs(Impounds) do
+	if not v.name then
+		Impounds[i].name = "Impound" .. i
+	end
+end
