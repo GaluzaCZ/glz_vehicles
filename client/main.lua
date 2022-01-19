@@ -1,6 +1,6 @@
 local MainRun = false -- Make sure to run the main function once
 ESX = nil
-xPlayer = nil
+xPlayer = {}
 
 -- ESX events
 RegisterNetEvent('esx:playerLoaded', function(playerData)

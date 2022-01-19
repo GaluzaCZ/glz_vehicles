@@ -4,7 +4,7 @@ Config.Locale = "cs" -- set your locale in "locales" folder
 
 Config.DrawDistance = 50 -- Distance which marker will show
 
-Config.SetVehicleStoredOnServerStart = true -- if server restart all vehicles will be stored in garage
+Config.SetVehicleStoredOnServerStart = false -- if server restart all vehicles will be stored in garage
 
 Config.Garages = {
 	Enabled = true,

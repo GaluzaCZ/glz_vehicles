@@ -201,7 +201,7 @@ end
 SpawnVehicle = function(vehicle, spawnData)
 	ESX.Game.SpawnVehicle(vehicle.vehicle.model, spawnData.spawn, spawnData.heading, function(callback_vehicle)
 		TriggerServerEvent("glz_veh:setVehicleStatus", vehicle.plate, 0)
-		SetVehicleNumberPlateText(callback_vehicle, vehicle.vehicle.plate)
+		SetVehicleProperties(callback_vehicle, vehicle.vehicle)
 		TaskWarpPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
 	end)
 end
@@ -209,12 +209,13 @@ end
 DeSpawnVehicle = function()
 	local data = currentData
 	local vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
-	ESX.TriggerServerCallback("glz_veh:hasPlayerVehicleByPlate", function (has)
+	local vehicleProps = GetVehicleProperties(vehicle)
+	ESX.TriggerServerCallback("glz_veh:hasPlayerVehicleByPlate", function(has)
 		if has then
 			ESX.Game.DeleteVehicle(vehicle)
-			TriggerServerEvent("glz_veh:setVehicleStatus", vehicle.plate, 1)
+			TriggerServerEvent("glz_veh:vehicleDespawn", vehicleProps.plate, vehicleProps, data.name)
 		else
 			pNotify(_U("not_owned"), "error")
 		end
-	end, GetVehicleNumberPlateText(vehicle))
+	end, vehicleProps.plate)
 end

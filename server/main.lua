@@ -133,6 +133,10 @@ SaveNewVehicleToDatabase = function(vehicle)
 	MySQL.insert.await('INSERT INTO owned_vehicles (owner, plate, vehicle, vehiclename) VALUES (?, ?, ?, ?) ', {vehicle.owner, vehicle.plate, json.encode(vehicle.vehicle), vehicle.vehiclename})
 end
 
+UpdateVehicleInDatabase = function(vehicle)
+	MySQL.update.await('UPDATE owned_vehicles SET vehicle = ?, job = ?, stored = ?, garage_name = ?, vehiclename = ? WHERE plate = ? ', {json.encode(vehicle.vehicle), vehicle.job, vehicle.stored, vehicle.garage_name, vehicle.vehiclename, vehicle.plate})
+end
+
 CheckJobVehicles = function (job)
 	if #connectedJobs[job] < 1 and vehicles.job[job] then
 		-- to-do: add removing vehicles from vehicles.plate for save energy
