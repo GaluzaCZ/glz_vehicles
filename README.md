@@ -13,7 +13,7 @@ This script is for development. but have some features to use.
 
 ## Todo
 - [ ] Make documentation
-- [ ] Translate to EN
+- [x] Translate to EN
 - [ ] Some improvements
 - [ ] Save more querying to database
 
