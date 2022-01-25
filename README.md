@@ -1,7 +1,8 @@
 # ! This script is in alpha !
 # Vehicle system for ESX
 This script is for development!
-To use events, please see server/events.lua
+To use events or callbacks, please see [this](./server/events.lua) for server side or [this](./client/events.lua) for client side.  
+Exports are [here](./client/utils.lua)
 
 ## Dependencies
 - [es_extended](https://github.com/esx-framework/es_extended/tree/legacy)
