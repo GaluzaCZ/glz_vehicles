@@ -150,3 +150,7 @@ PlayerDropped = function(source)
 		table.remove(vehicles.source[source])
 	end
 end
+
+RegisterNetEvent('glz_veh:restart', function()
+	InitPlayer(source)
+end)

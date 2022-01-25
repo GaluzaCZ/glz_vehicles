@@ -30,8 +30,15 @@ Main = function()
 	end
 
 	-- Main thread
-	GarageInit()
+	TriggerEvent('glz_veh:init')
 end
+
+Citizen.CreateThread(function()
+	if not MainRun then
+		Main()
+		TriggerServerEvent("glz_veh:restart")
+	end
+end)
 
 function pNotify(text,type,time)
 	local options = {

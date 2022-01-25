@@ -4,6 +4,15 @@ Config.Locale = "cs" -- set your locale in "locales" folder
 
 Config.DrawDistance = 50 -- Distance which marker will show
 
+Config.CarLock = {
+	Enabled = true,
+	Command = "carlock", -- Its needed for KeyMapping
+	Key = "u", -- https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/
+	Distance = 30
+}
+
+------------------------------- Garage config ---------------------------------
+
 Config.SetVehicleStoredOnServerStart = true -- if server restart all vehicles will be stored in garage
 
 Config.Garages = {
@@ -27,7 +36,7 @@ Config.Garages = {
 		Scale = 2.0
 	},
 
-	Garages = Garages
+	Garages = Garages -- Garages can be set in shared/garages.lua
 }
 
 Config.Impounds = {
@@ -47,5 +56,5 @@ Config.Impounds = {
 		Scale = 2.0
 	},
 
-	Impounds = Impounds
+	Impounds = Impounds -- Impounds can be set in shared/impounds.lua
 }

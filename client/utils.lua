@@ -1,3 +1,21 @@
+OpenMenu = function(name, vehicles, cb)
+	local elements = {}
+	if not vehicles[1] then
+		elements[1] = {label = '<span style="color:Red">'.._U("no_cars")..'</span>', value=nil}
+	else
+		elements = vehicles
+	end
+	ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'vehiclesMenu', {
+		title =  name,
+		elements = elements,
+		align = 'top'
+	}, cb,
+	function(data, menu)
+		menu.close()
+	end)
+end
+exports("OpenMenu", OpenMenu)
+
 SetVehicleProperties = function(vehicle, vehicleProps)
 	ESX.Game.SetVehicleProperties(vehicle, vehicleProps)
 	if vehicleProps.windows then

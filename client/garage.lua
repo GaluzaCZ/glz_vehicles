@@ -57,7 +57,7 @@ CreateThread(function()
 	end
 end)
 
-GarageInit = function()
+AddEventHandler('glz_veh:init', function()
 	if Config.Garages.Enabled then
 		for i, v in ipairs(Config.Garages.Garages) do
 			CreateBlip(v.name, _("garage_blip_name"), v.pos, Config.Garages.Blip)
@@ -100,7 +100,7 @@ GarageInit = function()
 			table.insert(Markers, Marker)
 		end
 	end
-end
+end)
 
 PlayerInMarker = function(data)
 	if data == "garage" and not IsPedInAnyVehicle(PlayerPedId(), true) and not opened then
@@ -133,22 +133,13 @@ function OpenImpoundMenu()
 	local impData = currentData
 	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
 		local elements = {}
-		if vehicles[1] then
-			for i, v in ipairs(vehicles) do
-				if v.stored == 0 or v.garage == nil then
-					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span> - <span style="color:Green">$'..Config.Impounds.Cost..'</span>', value=v})
-				end
+		for i, v in ipairs(vehicles) do
+			if v.stored == 0 or v.garage == nil then
+				table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span> - <span style="color:Green">$'..Config.Impounds.Cost..'</span>', value=v})
 			end
 		end
-		if not elements[1] then
-			table.insert(elements,{label = '<span style="color:Red">'.._U("no_cars")..'</span>', value=nil})
-		end
 
-		ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'impound', {
-			title =  'Impound',
-			elements = elements,
-			align = 'top'
-		},function(data, menu)
+		OpenMenu("Impound", elements, function(data, menu)
 			if data.current.value then
 				if ESX.Game.IsSpawnPointClear(impData.spawn, 3.0) then
 					ESX.TriggerServerCallback("glz_veh:payForImpound", function(paid)
@@ -163,8 +154,6 @@ function OpenImpoundMenu()
 					pNotify(_U("spawnpoint_not_clear"), "warning")
 				end
 			end
-		end, function(data, menu)
-			menu.close()
 		end)
 	end)
 end
@@ -173,22 +162,13 @@ function OpenGarageMenu()
 	local garageData = currentData
 	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
 		local elements = {}
-		if vehicles[1] then
-			for i, v in ipairs(vehicles) do
-				if v.stored == 1 and v.garage_name == garageData.name then
-					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
-				end
+		for i, v in ipairs(vehicles) do
+			if v.stored == 1 and v.garage_name == garageData.name then
+				table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
 			end
 		end
-		if not elements[1] then
-			table.insert(elements,{label = '<span style="color:Red">'.._U("no_cars")..'</span>', value=nil})
-		end
 
-		ESX.UI.Menu.Open('default', GetCurrentResourceName(), 'garage', {
-			title =  'Garage',
-			elements = elements,
-			align = 'top'
-		},function(data, menu)
+		OpenMenu("Garage", elements, function(data, menu)
 			if data.current.value then
 				if ESX.Game.IsSpawnPointClear(garageData.spawn, 3.0) then
 					SpawnVehicle(data.current.value, garageData)
@@ -197,8 +177,6 @@ function OpenGarageMenu()
 					pNotify(_U("spawnpoint_not_clear"), "warning")
 				end
 			end
-		end, function(data, menu)
-			menu.close()
 		end)
 	end)
 end

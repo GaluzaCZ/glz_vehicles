@@ -1,4 +1,4 @@
-# ! This script is in alpha !
+# ! This script is in alpha and under development !
 # Vehicle system for ESX
 This script is for development!
 To use events or callbacks, please see [this](./server/events.lua) for server side or [this](./client/events.lua) for client side.  
@@ -7,11 +7,14 @@ Exports are [here](./client/utils.lua)
 ## Dependencies
 - [es_extended](https://github.com/esx-framework/es_extended/tree/legacy)
 - [MySQL wrapper](https://forum.cfx.re/t/standalone-oxmysql-lightweight-mysql-wrapper/4755120) (This is better then mysql-async)
+- [pNotify](https://github.com/Nick78111/pNotify)
 
 ## Features
 - Saves querying to database
 - Garage system
 - Saves vehicle damage
+- Car lock
+- Events
 
 ## Todo
 - [ ] Make documentation
