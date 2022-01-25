@@ -2,6 +2,7 @@ local Blips = {}
 local Markers = {}
 local currentData = nil
 local currentMarker
+local opened
 
 -- Draw blips on map
 function CreateBlip(name, blipName, pos, blip)
@@ -44,6 +45,7 @@ CreateThread(function()
 					PlayerInMarker(v.data)
 				else
 					if currentData and currentMarker == i then
+						opened = false
 						currentMarker = nil
 						currentData = nil
 						ESX.UI.Menu.CloseAll()
@@ -101,23 +103,26 @@ GarageInit = function()
 end
 
 PlayerInMarker = function(data)
-	if data == "garage" and not IsPedInAnyVehicle(PlayerPedId(), true) then
+	if data == "garage" and not IsPedInAnyVehicle(PlayerPedId(), true) and not opened then
 		ESX.ShowHelpNotification(_U("press_menu"))
 		if IsControlJustReleased(0,38) then
+			opened = true
 			OpenGarageMenu()
 		end
 	end
 
-	if data == "impound" and not IsPedInAnyVehicle(PlayerPedId(), true) then
+	if data == "impound" and not IsPedInAnyVehicle(PlayerPedId(), true) and not opened then
 		ESX.ShowHelpNotification(_U("press_menu"))
 		if IsControlJustReleased(0,38) then
+			opened = true
 			OpenImpoundMenu()
 		end
 	end
 
-	if data == "despawn" and IsPedInAnyVehicle(PlayerPedId(), true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() then
+	if data == "despawn" and IsPedInAnyVehicle(PlayerPedId(), true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() and not opened then
 		ESX.ShowHelpNotification(_U("press_despawn"))
 		if IsControlJustReleased(0,38) then
+			opened = true
 			DeSpawnVehicle()
 		end
 	end
@@ -130,7 +135,7 @@ function OpenImpoundMenu()
 		local elements = {}
 		if vehicles[1] then
 			for i, v in ipairs(vehicles) do
-				if v.stored == 0 then
+				if v.stored == 0 or v.garage == nil then
 					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span> - <span style="color:Green">$'..Config.Impounds.Cost..'</span>', value=v})
 				end
 			end
@@ -170,7 +175,7 @@ function OpenGarageMenu()
 		local elements = {}
 		if vehicles[1] then
 			for i, v in ipairs(vehicles) do
-				if v.stored == 1 then
+				if v.stored == 1 and v.garage_name == garageData.name then
 					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
 				end
 			end
@@ -200,7 +205,7 @@ end
 
 SpawnVehicle = function(vehicle, spawnData)
 	ESX.Game.SpawnVehicle(vehicle.vehicle.model, spawnData.spawn, spawnData.heading, function(callback_vehicle)
-		TriggerServerEvent("glz_veh:setVehicleStatus", vehicle.plate, 0)
+		TriggerServerEvent("glz_veh:setVehicleSpawn", vehicle.plate)
 		SetVehicleProperties(callback_vehicle, vehicle.vehicle)
 		TaskWarpPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
 	end)

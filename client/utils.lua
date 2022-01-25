@@ -1,4 +1,4 @@
-function SetVehicleProperties(vehicle, vehicleProps)
+SetVehicleProperties = function(vehicle, vehicleProps)
 	ESX.Game.SetVehicleProperties(vehicle, vehicleProps)
 	if vehicleProps.windows then
 		for windowId = 0, 7, 1 do
@@ -21,8 +21,9 @@ function SetVehicleProperties(vehicle, vehicleProps)
 	end
 	if vehicleProps.vehicleHeadLight then SetVehicleHeadlightsColour(vehicle, vehicleProps.vehicleHeadLight) end
 end
+exports("SetVehicleProperties", SetVehicleProperties)
 
-function GetVehicleProperties(vehicle)
+GetVehicleProperties = function(vehicle)
     if DoesEntityExist(vehicle) then
         local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
         vehicleProps.tyres = {}
@@ -45,3 +46,4 @@ function GetVehicleProperties(vehicle)
 		return nil
     end
 end
+exports("GetVehicleProperties", GetVehicleProperties)

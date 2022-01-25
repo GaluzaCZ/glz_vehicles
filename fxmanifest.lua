@@ -8,7 +8,7 @@ version "1.0"
 
 dependencies {
 	"mysql-async",
-	"es_extended",
+	"es_extended"
 }
 
 shared_scripts {
@@ -21,11 +21,12 @@ shared_scripts {
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
 	'server/main.lua',
-	'server/events.lua',
+	'server/events.lua'
 }
 
 client_scripts {
 	'client/utils.lua',
 	'client/garage.lua',
 	'client/main.lua',
+	'client/events.lua'
 }

@@ -1,6 +1,7 @@
 # ! This script is in alpha !
 # Vehicle system for ESX
-This script is for development. but have some features to use.
+This script is for development!
+To use events, please see server/events.lua
 
 ## Dependencies
 - [es_extended](https://github.com/esx-framework/es_extended/tree/legacy)
