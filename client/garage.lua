@@ -134,7 +134,7 @@ function OpenImpoundMenu()
 	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
 		local elements = {}
 		for i, v in ipairs(vehicles) do
-			if v.stored == 0 or v.garage == nil then
+			if v.stored == 0 or v.garage_name == nil then
 				table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span> - <span style="color:Green">$'..Config.Impounds.Cost..'</span>', value=v})
 			end
 		end
