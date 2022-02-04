@@ -33,12 +33,12 @@ Main = function()
 	TriggerEvent('glz_veh:init')
 end
 
-Citizen.CreateThread(function()
-	if not MainRun then
-		Main()
-		TriggerServerEvent("glz_veh:restart")
-	end
-end)
+--Citizen.CreateThread(function()
+--	if not MainRun then
+--		TriggerServerEvent("glz_veh:restart")
+--		Main()
+--	end
+--end)
 
 function pNotify(text,type,time)
 	local options = {

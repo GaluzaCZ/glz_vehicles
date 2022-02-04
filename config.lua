@@ -4,6 +4,9 @@ Config.Locale = "cs" -- set your locale in "locales" folder
 
 Config.DrawDistance = 50 -- Distance which marker will show
 
+Config.SwitchVehicleJobCommand = "switchvehiclejob"
+
+------------------------------- CarLock config --------------------------------
 Config.CarLock = {
 	Enabled = true,
 	Command = "carlock", -- Its needed for KeyMapping

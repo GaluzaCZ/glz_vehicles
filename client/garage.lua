@@ -185,7 +185,7 @@ SpawnVehicle = function(vehicle, spawnData)
 	ESX.Game.SpawnVehicle(vehicle.vehicle.model, spawnData.spawn, spawnData.heading, function(callback_vehicle)
 		TriggerServerEvent("glz_veh:setVehicleSpawn", vehicle.plate)
 		SetVehicleProperties(callback_vehicle, vehicle.vehicle)
-		TaskWarpPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
+		SetPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
 	end)
 end
 

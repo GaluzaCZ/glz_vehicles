@@ -55,6 +55,19 @@ ESX.RegisterServerCallback("glz_veh:hasPlayerVehicleByPlate", function(source, c
 	cb(false)
 end)
 
+ESX.RegisterServerCallback("glz_veh:hasPlayerVehicleByJob", function(source, cb, plate)
+	local xPlayer = ESX.GetPlayerFromId(source)
+	if vehicles.job[xPlayer.getJob().name] then
+		for i, v in ipairs(vehicles.job[xPlayer.getJob().name]) do
+			if v == plate then
+				cb(true)
+				return
+			end
+		end
+	end
+	cb(false)
+end)
+
 RegisterNetEvent('glz_veh:setVehicleStatus', function(vehiclePlate, status)
 	if vehicles.plate[vehiclePlate] then
 		vehicles.plate[vehiclePlate].stored = tonumber(status)
@@ -77,13 +90,11 @@ RegisterNetEvent('glz_veh:setVehicleSpawn', function(vehiclePlate)
 end)
 
 RegisterNetEvent('glz_veh:vehicleDespawn', function(vehiclePlate, vehicleProps, garage)
-	if vehicles.plate[vehiclePlate] then
-		local Vehicle = vehicles.plate[vehiclePlate]
-		Vehicle.vehicle = vehicleProps
-		Vehicle.stored = 1
-		Vehicle.garage_name = garage or nil
-		vehicles.plate[vehiclePlate] = Vehicle
-		UpdateVehicleInDatabase(Vehicle)
+	if vehicles.plate[vehiclePlate] and vehiclePlate and vehicleProps then
+		vehicles.plate[vehiclePlate].vehicle = vehicleProps
+		vehicles.plate[vehiclePlate].stored = 1
+		vehicles.plate[vehiclePlate].garage_name = garage or nil
+		UpdateVehicleInDatabase(vehicles.plate[vehiclePlate])
 	end
 end)
 
@@ -108,5 +119,36 @@ RegisterNetEvent('glz_veh:setVehiclePropsOwned', function(vehicleProps, plate, v
 
 	InsertVehicle("source", vehicle, xPlayer)
 
-    SaveNewVehicleToDatabase(vehicle)
+	SaveNewVehicleToDatabase(vehicle)
+end)
+
+RegisterNetEvent('glz_veh:switchVehicleJob', function(plate)
+	local _source = source
+	local xPlayer = ESX.GetPlayerFromId(_source)
+
+	if vehicles.plate[plate] and vehicles.plate[plate].owner == xPlayer.identifier then
+		if vehicles.plate[plate].job == nil then
+			vehicles.plate[plate].job = xPlayer.getJob().name
+			InsertVehicle("job", vehicles.plate[plate], xPlayer)
+			UpdateVehicleInDatabase(vehicles.plate[plate])
+			TriggerClientEvent("pNotify:SendNotification", source, {
+				text = _U("set_vehicle_job", xPlayer.getJob().label),
+				timeout = 3500,
+				type = "success"
+			})
+		elseif vehicles.plate[plate].job ~= nil then
+			for i, v in ipairs(vehicles.job[vehicles.plate[plate].job]) do
+				if v == plate then
+					table.remove(vehicles.job[vehicles.plate[plate].job], i)
+				end
+			end
+			vehicles.plate[plate].job = nil
+			UpdateVehicleInDatabase(vehicles.plate[plate])
+			TriggerClientEvent("pNotify:SendNotification", source, {
+				text = _U("remove_vehicle_job"),
+				timeout = 3500,
+				type = "info"
+			})
+		end
+	end
 end)

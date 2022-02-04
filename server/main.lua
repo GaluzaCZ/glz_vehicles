@@ -37,11 +37,12 @@ RegisterNetEvent('esx:setJob', function(source, job, lastJob)
 end)
 
 RegisterNetEvent('esx:playerLoaded', function(source, xPlayer)
-	if not connectedJobs[xPlayer.job.name] then
-		connectedJobs[xPlayer.job.name] = {}
+	if not connectedJobs[xPlayer.getJob().name] then
+		connectedJobs[xPlayer.getJob().name] = {}
 	end
-	table.insert(connectedJobs[xPlayer.job.name], source)
+	table.insert(connectedJobs[xPlayer.getJob().name], source)
 
+	Wait(1000)
 	InitPlayer(source)
 end)
 
@@ -115,11 +116,11 @@ end
 LoadVehiclesFromDatabase = function(xPlayer, loadPlayer, loadJob)
 	local result
 	if loadPlayer and loadJob then
-		result = MySQL.query.await('SELECT * FROM owned_vehicles WHERE owner = ? OR job = ?', {xPlayer.identifier, xPlayer.job.name})
+		result = MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE owner = ? OR job = ?', {xPlayer.identifier, xPlayer.job.name})
 	elseif loadPlayer and not loadJob then
-		result = MySQL.query.await('SELECT * FROM owned_vehicles WHERE owner = ?', {xPlayer.identifier})
+		result = MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE owner = ?', {xPlayer.identifier})
 	elseif not loadPlayer and loadJob then
-		result = MySQL.query.await('SELECT * FROM owned_vehicles WHERE job = ?', {xPlayer.job.name})
+		result = MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE job = ?', {xPlayer.job.name})
 	end
 
 	for i, v in ipairs(result) do
@@ -130,15 +131,15 @@ LoadVehiclesFromDatabase = function(xPlayer, loadPlayer, loadJob)
 end
 
 SaveNewVehicleToDatabase = function(vehicle)
-	MySQL.insert.await('INSERT INTO owned_vehicles (owner, plate, vehicle, vehiclename) VALUES (?, ?, ?, ?) ', {vehicle.owner, vehicle.plate, json.encode(vehicle.vehicle), vehicle.vehiclename})
+	MySQL.Async.insert('INSERT INTO owned_vehicles (owner, plate, vehicle, vehiclename) VALUES (?, ?, ?, ?) ', {vehicle.owner, vehicle.plate, json.encode(vehicle.vehicle), vehicle.vehiclename})
 end
 
 UpdateVehicleInDatabase = function(vehicle)
-	MySQL.update.await('UPDATE owned_vehicles SET vehicle = ?, job = ?, stored = ?, garage_name = ?, vehiclename = ? WHERE plate = ? ', {json.encode(vehicle.vehicle), vehicle.job, vehicle.stored, vehicle.garage_name, vehicle.vehiclename, vehicle.plate})
+	MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = ?, job = ?, stored = ?, garage_name = ?, vehiclename = ? WHERE plate = ? ', {json.encode(vehicle.vehicle), vehicle.job, vehicle.stored, vehicle.garage_name, vehicle.vehiclename, vehicle.plate})
 end
 
 CheckJobVehicles = function (job)
-	if #connectedJobs[job] < 1 and vehicles.job[job] then
+	if (not connectedJobs[job] or #connectedJobs[job] < 1) and vehicles.job[job] then
 		-- to-do: add removing vehicles from vehicles.plate for save energy
 		table.remove(vehicles.job[job])
 	end
@@ -152,5 +153,7 @@ PlayerDropped = function(source)
 end
 
 RegisterNetEvent('glz_veh:restart', function()
-	InitPlayer(source)
+	local _source = source
+	PlayerDropped(_source)
+	InitPlayer(_source)
 end)

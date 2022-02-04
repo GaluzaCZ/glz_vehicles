@@ -29,5 +29,6 @@ client_scripts {
 	'client/garage.lua',
 	'client/main.lua',
 	'client/events.lua',
+	'client/commands.lua',
 	'client/carlock.lua'
 }

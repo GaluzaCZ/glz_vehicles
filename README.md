@@ -14,6 +14,9 @@ Exports are [here](./client/utils.lua)
 - Garage system
 - Saves vehicle damage
 - Car lock
+- Switch vehicle job
+- Support for my radialmenu
+- Support for my esx property
 - Events
 
 ## Todo

@@ -17,7 +17,7 @@ if Config.CarLock.Enabled then
 			local coords = GetEntityCoords(GetPlayerPed(-1))
 			local cars = ESX.Game.GetVehiclesInArea(coords, Config.CarLock.Distance)
 			if #cars == 0 then
-				pNotify("Žádné vozidlo poblíž","info")
+				pNotify(_U("no_cars_in_radius"),"info")
 			else
 				local carsdistancesort = {}
 				local carsdistance = {}
@@ -56,7 +56,7 @@ if Config.CarLock.Enabled then
 									TaskPlayAnim(PlayerPedId(), dict, "fob_click_fp", 8.0, 8.0, -1, 48, 1, false, false, false)
 								end
 
-								pNotify("Vozidlo zamčeno","success")
+								pNotify(_U("vehicle_locked"),"success")
 								BlinkVehicle(v)
 							elseif lock == 2 then
 								SetVehicleDoorsLocked(v, 1)
@@ -66,7 +66,7 @@ if Config.CarLock.Enabled then
 									TaskPlayAnim(PlayerPedId(), dict, "fob_click_fp", 8.0, 8.0, -1, 48, 1, false, false, false)
 								end
 
-								pNotify("Vozidlo odemčeno","warning")
+								pNotify(_U("vehicle_unlocked"),"warning")
 								BlinkVehicle(v)
 							end
 						else
@@ -78,16 +78,10 @@ if Config.CarLock.Enabled then
 						break
 					end
 					if i == #vehiclesbydistance then
-						pNotify("Žádné tvoje vozidlo poblíž","info")
+						pNotify(_U("no_owned_cars_in_radius"),"info")
 					end
 				end
 			end
 		end
-
-		RegisterCommand(Config.CarLock.Command, function()
-			ToggleLock()
-		end, false)
-
-		RegisterKeyMapping(Config.CarLock.Command, "Lock/Unlock your vehicle", "keyboard", Config.CarLock.Key)
 	end)
 end
