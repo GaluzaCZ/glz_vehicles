@@ -17,12 +17,13 @@ OpenMenu = function(name, vehicles, cb, cb2)
 end
 exports("OpenMenu", OpenMenu)
 
-OpenGarageMenu = function(garageName, pos, heading, cb)
+OpenGarageMenu = function(garageName, pos, heading, type, cb)
 	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
 		local elements = {}
+		type = type or "car"
 		if vehicles[1] then
 			for i, v in ipairs(vehicles) do
-				if v.stored == 1 and v.garage_name == garageName then
+				if v.stored == 1 and v.garage_name == garageName and v.type == type then
 					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
 				end
 			end
@@ -49,12 +50,13 @@ OpenGarageMenu = function(garageName, pos, heading, cb)
 end
 exports("OpenGarageMenu", OpenGarageMenu)
 
-OpenJobGarageMenu = function(job, garageName, pos, heading, cb)
+OpenJobGarageMenu = function(job, garageName, pos, heading, type, cb)
 	ESX.TriggerServerCallback("glz_veh:getJobVehicles", function(vehicles)
 		local elements = {}
+		type = type or "car"
 		if vehicles[1] then
 			for i, v in ipairs(vehicles) do
-				if v.stored == 1 and v.garage_name == garageName and v.job == job then
+				if v.stored == 1 and v.garage_name == garageName and v.job == job and v.type == type then
 					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
 				end
 			end
