@@ -1,74 +1,41 @@
 -- Global vars
 ESX = exports.es_extended:getSharedObject()
-connectedJobs = {}
-vehicles = {
-	source = {},
-	plate = {},
-	job = {}
-}
 
 -- ESX events
-RegisterNetEvent('esx:setJob', function(source, job, lastJob)
-	for i, user in ipairs(connectedJobs[lastJob.name]) do
-		if user == source then
-			table.remove(connectedJobs[lastJob.name], i)
-			break
-		end
-	end
-
-	if not connectedJobs[job.name] then
-		connectedJobs[job.name] = {}
-	end
-
-	table.insert(connectedJobs[job.name], source)
-
-	local xPlayer = ESX.GetPlayerFromId(source)
-	if not vehicles.job[job.name] then
-		result = LoadVehiclesFromDatabase(xPlayer, false, true)
+AddEventHandler('esx:setJob', function(source, job, lastJob)
+	if not vehicles.job.is(job.name) then
+		local xPlayer = ESX.GetPlayerFromId(source)
+		local result = LoadVehiclesFromDatabase(xPlayer, false, true)
 		for i, vehicle in ipairs(result) do
 			if Config.SetVehicleStoredOnServerStart then
 				vehicle.stored = 1
 			end
 
-			InsertVehicle("job", vehicle, xPlayer)
+			vehicles.job.add(xPlayer.job.name, vehicle.plate)
 		end
 	end
-	CheckJobVehicles(lastJob.name)
 end)
 
-RegisterNetEvent('esx:playerLoaded', function(source, xPlayer)
-	if not connectedJobs[xPlayer.getJob().name] then
-		connectedJobs[xPlayer.getJob().name] = {}
-	end
-	table.insert(connectedJobs[xPlayer.getJob().name], source)
-
-	Wait(1000)
+AddEventHandler('esx:playerLoaded', function(source, xPlayer)
 	InitPlayer(source)
 end)
 
-RegisterNetEvent('esx:playerDropped', function(source)
-	local lastJob = nil
-	for job, users in pairs(connectedJobs) do
-		for i, user in ipairs(users) do
-			if user == source then
-				lastJob = job
-				table.remove(connectedJobs[job], i)
-				break -- break loops
-			end
-		end
-	end
-
-	PlayerDropped(source)
-	CheckJobVehicles(lastJob)
+AddEventHandler('esx:playerLogout', function(source)
+	vehicles.source.remove(source)
+	-- to do: add removing job and plate
 end)
 
 InitPlayer = function(source)
 	local xPlayer = ESX.GetPlayerFromId(source)
+	while xPlayer == nil do
+		xPlayer = ESX.GetPlayerFromId(source)
+		Wait(1000)
+	end
+	local job = false
 	local result
-	local job
 
-	-- checks if some vehicles are loaded
-	if vehicles.job[xPlayer.job.name] then
+	-- checks if job is already loaded
+	if vehicles.job.is(xPlayer.job.name) then
 		job = true
 		result = LoadVehiclesFromDatabase(xPlayer, true, false)
 	else
@@ -80,14 +47,12 @@ InitPlayer = function(source)
 			vehicle.stored = 1
 		end
 
-		if vehicle.owner == xPlayer.identifier then -- If is owner of this car add the vehicle to vehicles.identifier
-
-			InsertVehicle("source", vehicle, xPlayer)
-		end
+		vehicles.source.add(xPlayer.source, vehicle.plate)
+		vehicles.plate.add(vehicle)
 
 		if not job and vehicle.job and vehicle.job == xPlayer.job.name then
 
-			InsertVehicle("job", vehicle, xPlayer)
+			vehicles.job.add(xPlayer.job.name, vehicle.plate)
 		end
 	end
 end
@@ -95,21 +60,13 @@ end
 -- Insert function table.insert()
 InsertVehicle = function(where, vehicle, xPlayer, override)
 	if where == "source" then
-		if not vehicles.source[xPlayer.source] then
-			vehicles.source[xPlayer.source] = {}
-		end
-
-		table.insert(vehicles.source[xPlayer.source], vehicle.plate)
+		vehicles.source.add(xPlayer.source, vehicle.plate)
 	elseif where == "job" then
-		if not vehicles.job[xPlayer.job.name] then
-			vehicles.job[xPlayer.job.name] = {}
-		end
-
-		table.insert(vehicles.job[xPlayer.job.name], vehicle.plate)
+		vehicles.job.add(xPlayer.job.name, vehicle.plate)
 	end
 
-	if not vehicles.plate[vehicle.plate] or override then
-		vehicles.plate[vehicle.plate] = vehicle
+	if not vehicles.plate.is(vehicle.plate) or override then
+		vehicles.plate.add(vehicle)
 	end
 end
 
@@ -138,22 +95,10 @@ UpdateVehicleInDatabase = function(vehicle)
 	MySQL.Async.execute('UPDATE owned_vehicles SET vehicle = ?, job = ?, stored = ?, garage_name = ?, vehiclename = ? WHERE plate = ? ', {json.encode(vehicle.vehicle), vehicle.job, vehicle.stored, vehicle.garage_name, vehicle.vehiclename, vehicle.plate})
 end
 
-CheckJobVehicles = function (job)
-	if (not connectedJobs[job] or #connectedJobs[job] < 1) and vehicles.job[job] then
-		-- to-do: add removing vehicles from vehicles.plate for save energy
-		table.remove(vehicles.job[job])
-	end
-end
-
-PlayerDropped = function(source)
-	if vehicles.source[source] then
-		-- to-do: add removing vehicles from vehicles.plate for save energy
-		table.remove(vehicles.source[source])
-	end
+RemoveVehicleFromDatabase = function(plate)
+	MySQL.Async.execute('DELETE FROM owned_vehicles WHERE plate = ?', {plate})
 end
 
 RegisterNetEvent('glz_veh:restart', function()
-	local _source = source
-	PlayerDropped(_source)
-	InitPlayer(_source)
+	InitPlayer(source)
 end)

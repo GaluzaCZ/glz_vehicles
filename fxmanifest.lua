@@ -4,7 +4,9 @@ game 'gta5'
 name "glz_vehicles"
 description "Vehicle system for better working with vehicles"
 author "GalužaCZ#8828"
-version "1.0"
+version "Alpha"
+
+lua54 'yes'
 
 dependencies {
 	"mysql-async",
@@ -21,6 +23,7 @@ shared_scripts {
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
 	'server/main.lua',
+	'server/classes/vehicles.lua',
 	'server/events.lua'
 }
 

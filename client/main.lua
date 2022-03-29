@@ -1,6 +1,6 @@
-local MainRun = false -- Make sure to run the main function once
 ESX = nil
 xPlayer = {}
+PPed = PlayerPedId()
 
 -- ESX events
 RegisterNetEvent('esx:playerLoaded', function(playerData)
@@ -10,18 +10,20 @@ RegisterNetEvent('esx:playerLoaded', function(playerData)
 	end
 end)
 
-RegisterNetEvent('esx:setJob', function(Job)
-	xPlayer.job = Job
+RegisterNetEvent('esx:setJob', function(job)
+	xPlayer.job = job
 end)
 
 RegisterNetEvent('esx:setPlayerData', function(k, v)
 	xPlayer[k] = v
 end)
 
+local MainRun = false -- Make sure to run the main function once
 Main = function()
 	MainRun = true
 
 	-- load ESX to client
+	ESX = exports.es_extended:getSharedObject()
 	while ESX == nil do
 		ESX = exports.es_extended:getSharedObject()
 	end
@@ -29,7 +31,7 @@ Main = function()
 		xPlayer = ESX.GetPlayerData()
 	end
 
-	-- Main thread
+	-- initialize
 	TriggerEvent('glz_veh:init')
 end
 
