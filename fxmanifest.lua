@@ -22,8 +22,8 @@ shared_scripts {
 
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
-	'server/main.lua',
 	'server/classes/vehicles.lua',
+	'server/main.lua',
 	'server/events.lua'
 }
 

@@ -1,7 +1,7 @@
 local Blips = {}
-local Markers = {}
+local Positions = {}
 local currentData
-local currentMarker
+local currentPosition
 local opened
 
 -- Draw blips on map
@@ -26,28 +26,28 @@ CreateThread(function()
 		PPed = PlayerPedId()
 		local sleep = 500 -- save energy
 
-		for i,v in ipairs(Markers) do
+		for i,v in ipairs(Positions) do
 			local pedCoords = GetEntityCoords(PPed)
 			local distance = #(pedCoords - v.pos)
 
 			if distance < Config.DrawDistance then
 				sleep = 0
 				DrawMarker(
-					v.Type,
+					v.marker.Type,
 					v.pos.x, v.pos.y, v.pos.z,
 					0, 0, 0, 0, 0, 0,
-					v.Scale, v.Scale, v.Scale,
-					v.Color.red, v.Color.green, v.Color.blue,
+					v.marker.Scale, v.marker.Scale, v.marker.Scale,
+					v.marker.Color.red, v.marker.Color.green, v.marker.Color.blue,
 					150,true,false,2,true,nil,nil,false
 				)
-				if distance < v.Scale then
-					currentMarker = i
+				if distance < v.marker.Scale then
+					currentPosition = i
 					currentData = v
 					PlayerInMarker(v.data)
 				else
-					if currentData and currentMarker == i then
+					if currentData and currentPosition == i then
 						opened = false
-						currentMarker = nil
+						currentPosition = nil
 						currentData = nil
 						ESX.UI.Menu.CloseAll()
 					end
@@ -63,25 +63,23 @@ AddEventHandler('glz_veh:init', function()
 		for i, v in ipairs(Config.Garages.Garages) do
 			CreateBlip(v.name, _("garage_blip_name"), v.pos, Config.Garages.Blip)
 
-			local Marker = {}
-			Marker.Type = Config.Garages.Marker.Type
-			Marker.Color = Config.Garages.Marker.Color
-			Marker.Scale = Config.Garages.Marker.Scale
-			Marker.name = v.name
-			Marker.data = "garage"
-			Marker.spawn = v.spawn
-			Marker.heading = v.heading
-			Marker.pos = v.pos
-			table.insert(Markers, Marker)
+			local pos = {
+				marker = Config.Garages.Marker,
+				name = v.name,
+				data = "garage",
+				spawn = v.spawn,
+				heading = v.heading,
+				pos = v.pos
+			}
+			table.insert(Positions, pos)
 
-			local Marker2 = {}
-			Marker2.Type = Config.Garages.DespawnMarker.Type
-			Marker2.Color = Config.Garages.DespawnMarker.Color
-			Marker2.Scale = Config.Garages.DespawnMarker.Scale
-			Marker2.name = v.name
-			Marker2.data = "despawn"
-			Marker2.pos = v.despawn
-			table.insert(Markers, Marker2)
+			local pos2 = {
+				marker = Config.Garages.DespawnMarker,
+				name = v.name,
+				data = "despawn",
+				pos = v.despawn
+			}
+			table.insert(Positions, pos2)
 		end
 	end
 
@@ -89,16 +87,15 @@ AddEventHandler('glz_veh:init', function()
 		for i, v in ipairs(Config.Impounds.Impounds) do
 			CreateBlip(v.name, _U("impound_blip_name"), v.pos, Config.Impounds.Blip)
 
-			local Marker = {}
-			Marker.Type = Config.Impounds.Marker.Type
-			Marker.Color = Config.Impounds.Marker.Color
-			Marker.Scale = Config.Impounds.Marker.Scale
-			Marker.name = v.name
-			Marker.data = "impound"
-			Marker.spawn = v.spawn
-			Marker.heading = v.heading
-			Marker.pos = v.pos
-			table.insert(Markers, Marker)
+			local pos = {
+				marker = Config.Impounds.Marker,
+				name = v.name,
+				data = "impound",
+				spawn = v.spawn,
+				heading = v.heading,
+				pos = v.pos
+			}
+			table.insert(Positions, pos)
 		end
 	end
 end)
