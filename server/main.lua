@@ -11,9 +11,12 @@ AddEventHandler('esx:setJob', function(source, job, lastJob)
 				vehicle.stored = 1
 			end
 
+			vehicles.plate.add(vehicle)
 			vehicles.job.add(xPlayer.job.name, vehicle.plate)
 		end
 	end
+	vehicles.job.removeUnused()
+	vehicles.plate.removeUnused()
 end)
 
 AddEventHandler('esx:playerLoaded', function(source, xPlayer)
@@ -22,7 +25,7 @@ end)
 
 AddEventHandler('esx:playerLogout', function(source)
 	vehicles.source.remove(source)
-	-- to do: add removing job and plate
+	vehicles.plate.removeUnused()
 end)
 
 InitPlayer = function(source)
@@ -47,11 +50,13 @@ InitPlayer = function(source)
 			vehicle.stored = 1
 		end
 
-		vehicles.source.add(xPlayer.source, vehicle.plate)
 		vehicles.plate.add(vehicle)
 
-		if not job and vehicle.job and vehicle.job == xPlayer.job.name then
+		if vehicle.owner == xPlayer.identifier then
+			vehicles.source.add(xPlayer.source, vehicle.plate)
+		end
 
+		if not job and vehicle.job and vehicle.job == xPlayer.job.name then
 			vehicles.job.add(xPlayer.job.name, vehicle.plate)
 		end
 	end
