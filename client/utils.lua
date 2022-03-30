@@ -35,12 +35,12 @@ OpenGarageMenu = function(garageName, pos, heading, type, cb)
 					ESX.Game.SpawnVehicle(data.current.value.vehicle.model, pos, heading, function(callback_vehicle)
 						TriggerServerEvent("glz_veh:setVehicleSpawn", data.current.value.plate)
 						SetVehicleProperties(callback_vehicle, data.current.value.vehicle)
-						SetPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
+						SetPedIntoVehicle(PPed, callback_vehicle, -1)
+						if cb then
+							cb()
+						end
 					end)
 					menu.close()
-					if cb then
-						cb()
-					end
 				else
 					pNotify(_U("spawnpoint_not_clear"), "warning")
 				end
@@ -68,7 +68,7 @@ OpenJobGarageMenu = function(job, garageName, pos, heading, type, cb)
 					ESX.Game.SpawnVehicle(data.current.value.vehicle.model, pos, heading, function(callback_vehicle)
 						TriggerServerEvent("glz_veh:setVehicleSpawn", data.current.value.plate)
 						SetVehicleProperties(callback_vehicle, data.current.value.vehicle)
-						SetPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
+						SetPedIntoVehicle(PPed, callback_vehicle, -1)
 					end)
 					menu.close()
 					if cb then

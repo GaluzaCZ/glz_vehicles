@@ -1,6 +1,6 @@
 RegisterCommand(Config.SwitchVehicleJobCommand, function()
-	if IsPedInAnyVehicle(PlayerPedId(), true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() then
-		local vehicle = GetVehiclePedIsIn(GetPlayerPed(-1), false)
+	if IsPedInAnyVehicle(PPed, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PPed), -1) == PPed then
+		local vehicle = GetVehiclePedIsIn(PPed, false)
 		local plate = GetVehicleNumberPlateText(vehicle)
 		ESX.TriggerServerCallback("glz_veh:hasPlayerVehicleByPlate", function(has)
 			if has then

@@ -1,6 +1,6 @@
 local Blips = {}
 local Markers = {}
-local currentData = nil
+local currentData
 local currentMarker
 local opened
 
@@ -23,11 +23,12 @@ end
 --Draw markers and their stuff
 CreateThread(function()
 	while true do
+		PPed = PlayerPedId()
 		local sleep = 500 -- save energy
 
 		for i,v in ipairs(Markers) do
-			local pedCoords = GetEntityCoords(PlayerPedId())
-			local distance = GetDistanceBetweenCoords(pedCoords, v.pos, true)
+			local pedCoords = GetEntityCoords(PPed)
+			local distance = #(pedCoords - v.pos)
 
 			if distance < Config.DrawDistance then
 				sleep = 0
@@ -103,15 +104,15 @@ AddEventHandler('glz_veh:init', function()
 end)
 
 PlayerInMarker = function(data)
-	if data == "garage" and not IsPedInAnyVehicle(PlayerPedId(), true) and not opened then
+	if data == "garage" and not IsPedInAnyVehicle(PPed, true) and not opened then
 		ESX.ShowHelpNotification(_U("press_menu"))
 		if IsControlJustReleased(0,38) then
 			opened = true
-			OpenGarageMenu()
+			OpenGarageMenu(currentData.name, currentData.spawn, currentData.heading)
 		end
 	end
 
-	if data == "impound" and not IsPedInAnyVehicle(PlayerPedId(), true) and not opened then
+	if data == "impound" and not IsPedInAnyVehicle(PPed, true) and not opened then
 		ESX.ShowHelpNotification(_U("press_menu"))
 		if IsControlJustReleased(0,38) then
 			opened = true
@@ -119,11 +120,11 @@ PlayerInMarker = function(data)
 		end
 	end
 
-	if data == "despawn" and IsPedInAnyVehicle(PlayerPedId(), true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PlayerPedId()), -1) == PlayerPedId() and not opened then
+	if data == "despawn" and IsPedInAnyVehicle(PPed, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PPed), -1) == PPed and not opened then
 		ESX.ShowHelpNotification(_U("press_despawn"))
 		if IsControlJustReleased(0,38) then
 			opened = true
-			DeSpawnVehicle()
+			StoreVehicle(GetVehiclePedIsIn(PPed,false), currentData.name)
 		end
 	end
 end
@@ -144,7 +145,11 @@ function OpenImpoundMenu()
 				if ESX.Game.IsSpawnPointClear(impData.spawn, 3.0) then
 					ESX.TriggerServerCallback("glz_veh:payForImpound", function(paid)
 						if paid then
-							SpawnVehicle(data.current.value, impData)
+							ESX.Game.SpawnVehicle(data.current.value.vehicle.model, impData.spawn, impData.heading, function(callback_vehicle)
+								TriggerServerEvent("glz_veh:setVehicleSpawn", data.current.value.plate)
+								SetVehicleProperties(callback_vehicle, data.current.value.vehicle)
+								SetPedIntoVehicle(PPed, callback_vehicle, -1)
+							end)
 							menu.close()
 						else
 							pNotify(_U("no_money", Config.Impounds.Cost), "error")
@@ -156,49 +161,4 @@ function OpenImpoundMenu()
 			end
 		end)
 	end)
-end
-
-function OpenGarageMenu()
-	local garageData = currentData
-	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
-		local elements = {}
-		for i, v in ipairs(vehicles) do
-			if v.stored == 1 and v.garage_name == garageData.name then
-				table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
-			end
-		end
-
-		OpenMenu("Garage", elements, function(data, menu)
-			if data.current.value then
-				if ESX.Game.IsSpawnPointClear(garageData.spawn, 3.0) then
-					SpawnVehicle(data.current.value, garageData)
-					menu.close()
-				else
-					pNotify(_U("spawnpoint_not_clear"), "warning")
-				end
-			end
-		end)
-	end)
-end
-
-SpawnVehicle = function(vehicle, spawnData)
-	ESX.Game.SpawnVehicle(vehicle.vehicle.model, spawnData.spawn, spawnData.heading, function(callback_vehicle)
-		TriggerServerEvent("glz_veh:setVehicleSpawn", vehicle.plate)
-		SetVehicleProperties(callback_vehicle, vehicle.vehicle)
-		SetPedIntoVehicle(PlayerPedId(), callback_vehicle, -1)
-	end)
-end
-
-DeSpawnVehicle = function()
-	local data = currentData
-	local vehicle = GetVehiclePedIsIn(PlayerPedId(),false)
-	local vehicleProps = GetVehicleProperties(vehicle)
-	ESX.TriggerServerCallback("glz_veh:hasPlayerVehicleByPlate", function(has)
-		if has then
-			ESX.Game.DeleteVehicle(vehicle)
-			TriggerServerEvent("glz_veh:vehicleDespawn", vehicleProps.plate, vehicleProps, data.name)
-		else
-			pNotify(_U("not_owned"), "error")
-		end
-	end, vehicleProps.plate)
 end
