@@ -155,7 +155,7 @@ vehicles.source.remove = function(source, plate)
 	return true
 end
 
-vehicles.source.removeUnused = function()
+vehicles.source.removeUnused = function() -- Don't use this function, idk if it's working
 	for source in pairs(self.source) do
 		local players = ESX.GetPlayers()
 		local continue = false

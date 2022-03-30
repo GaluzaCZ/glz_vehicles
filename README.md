@@ -22,7 +22,7 @@ Exports are [here](./client/utils.lua)
 ## Todo
 - [ ] Make documentation
 - [x] Translate to EN
-- [ ] Some improvements
+- [x] Some improvements
 - [ ] Save more querying to database
 
 ## License
