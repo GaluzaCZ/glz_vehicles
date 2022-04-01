@@ -28,13 +28,13 @@ Config.Garages = {
 	},
 
 	Marker = {
-		Type = 2, -- U can find it at https://docs.fivem.net/docs/game-references/markers/
+		Type = 2, -- https://docs.fivem.net/docs/game-references/markers/
 		Color = { red = 39, green = 255, blue = 0 }, -- (RGB) https://htmlcolorcodes.com/color-picker/
 		Scale = 0.5
 	},
 
 	DespawnMarker = {
-		Type = 30, -- U can find it at https://docs.fivem.net/docs/game-references/markers/
+		Type = 30, -- https://docs.fivem.net/docs/game-references/markers/
 		Color = { red = 38, green = 190, blue = 255 }, -- (RGB) https://htmlcolorcodes.com/color-picker/
 		Scale = 2.0
 	},
@@ -45,7 +45,7 @@ Config.Garages = {
 Config.Impounds = {
 	Enabled = true,
 
-	Cost = 2000,
+	Cost = 2000, -- number or false
 
 	Blip = {
 		Type = 67, -- https://docs.fivem.net/docs/game-references/blips/
@@ -54,7 +54,7 @@ Config.Impounds = {
 	},
 
 	Marker = {
-		Type = 24, -- U can find it at https://docs.fivem.net/docs/game-references/markers/
+		Type = 24, -- https://docs.fivem.net/docs/game-references/markers/
 		Color = { red = 255, green = 80, blue = 0 }, -- (RGB) https://htmlcolorcodes.com/color-picker/
 		Scale = 2.0
 	},

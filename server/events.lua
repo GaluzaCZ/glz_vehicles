@@ -16,6 +16,7 @@ ESX.RegisterServerCallback("glz_veh:getVehicleByPlate", function(source, cb, pla
 end)
 
 ESX.RegisterServerCallback("glz_veh:payForImpound", function(source, cb)
+	if Config.Impounds.Cost == false or Config.Impounds.Cost <= 0 then return cb(true) end
 	local xPlayer = ESX.GetPlayerFromId(source)
 	if xPlayer.getMoney() >= Config.Impounds.Cost then
 		xPlayer.removeMoney(Config.Impounds.Cost)
