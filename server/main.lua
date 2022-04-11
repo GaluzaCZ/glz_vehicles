@@ -6,7 +6,8 @@ AddEventHandler('esx:setJob', function(source, job, lastJob)
 	if not vehicles.job.is(job.name) then
 		local xPlayer = ESX.GetPlayerFromId(source)
 		local result = LoadVehiclesFromDatabase(xPlayer, false, true)
-		for i, vehicle in ipairs(result) do
+		for i = 1, #result do
+			local vehicle = result[i]
 			if Config.SetVehicleStoredOnServerStart then
 				vehicle.stored = 1
 			end
@@ -45,7 +46,8 @@ InitPlayer = function(source)
 		result = LoadVehiclesFromDatabase(xPlayer, true, true)
 	end
 
-	for i, vehicle in ipairs(result) do
+	for i = 1, #result do
+		local vehicle = result[i]
 		if Config.SetVehicleStoredOnServerStart then
 			vehicle.stored = 1
 		end
@@ -62,7 +64,7 @@ InitPlayer = function(source)
 	end
 end
 
--- Insert function table.insert()
+-- Insert function
 InsertVehicle = function(where, vehicle, xPlayer, override)
 	if where == "source" then
 		vehicles.source.add(xPlayer.source, vehicle.plate)
@@ -85,8 +87,8 @@ LoadVehiclesFromDatabase = function(xPlayer, loadPlayer, loadJob)
 		result = MySQL.Sync.fetchAll('SELECT * FROM owned_vehicles WHERE job = ?', {xPlayer.job.name})
 	end
 
-	for i, v in ipairs(result) do
-		result[i].vehicle = json.decode(v.vehicle)
+	for i = 1, #result do
+		result[i].vehicle = json.decode(result[i].vehicle)
 	end
 
 	return result

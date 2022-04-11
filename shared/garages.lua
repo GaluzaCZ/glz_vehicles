@@ -21,8 +21,8 @@ Garages = {
 	}
 }
 
-for i, v in ipairs(Garages) do
-	if not v.name then
+for i = 1, #Garages do
+	if not Garages[i].name then
 		Garages[i].name = "Garage" .. i
 	end
 end

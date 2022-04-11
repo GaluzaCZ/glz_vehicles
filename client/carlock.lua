@@ -16,7 +16,7 @@ if Config.CarLock.Enabled then
 		local lockVehicle = function(v)
 			local lock = GetVehicleDoorLockStatus(v)
 			if lock == 1 or lock == 0 then
-				for i = 0, 5, 1 do
+				for i = 0, 5 do
 					SetVehicleDoorShut(v, i, false)
 				end
 				SetVehicleDoorsLocked(v, 2)
@@ -55,7 +55,8 @@ if Config.CarLock.Enabled then
 				return distance1 < distance2
 			end)
 
-			for i, v in ipairs(cars) do
+			for i = 1, #cars do
+				local v = cars[i]
 				local plate = ESX.Math.Trim(GetVehicleNumberPlateText(v))
 				local loop
 				ESX.TriggerServerCallback('glz_veh:hasPlayerVehicleByPlate', function(owner)

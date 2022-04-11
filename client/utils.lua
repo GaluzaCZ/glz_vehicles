@@ -22,9 +22,10 @@ OpenGarageMenu = function(garageName, pos, heading, type, cb)
 		local elements = {}
 		type = type or "car"
 		if vehicles[1] then
-			for i, v in ipairs(vehicles) do
+			for i = 1, #vehicles do
+				local v = vehicles[i]
 				if v.stored == 1 and v.garage_name == garageName and v.type == type then
-					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
+					elements[#elements+1] = {label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v}
 				end
 			end
 		end
@@ -55,9 +56,10 @@ OpenJobGarageMenu = function(job, garageName, pos, heading, type, cb)
 		local elements = {}
 		type = type or "car"
 		if vehicles[1] then
-			for i, v in ipairs(vehicles) do
+			for i = 1, #vehicles do
+				local v = vehicles[i]
 				if v.stored == 1 and v.garage_name == garageName and v.job == job and v.type == type then
-					table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v})
+					elements[#elements+1] = {label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v}
 				end
 			end
 		end
@@ -117,22 +119,24 @@ exports("StoreJobVehicle", StoreJobVehicle)
 
 SetVehicleProperties = function(vehicle, vehicleProps)
 	ESX.Game.SetVehicleProperties(vehicle, vehicleProps)
-	if vehicleProps.windows then
-		for windowId = 0, 7, 1 do
-			if vehicleProps.windows[windowId + 1] == true then
-				SmashVehicleWindow(vehicle, windowId)
+	if vehicleProps.tyres then
+		for id = 0, 7 do
+			if vehicleProps.tyres[id + 1] then
+				SetTyreHealth(vehicle, id, ESX.Math.Round(tonumber(vehicleProps.tyres[id + 1]), 1))
 			end
 		end
 	end
-	if vehicleProps.tyres then
-        for k, v in pairs(vehicleProps.tyres) do
-            SetTyreHealth(vehicle, tonumber(k), ESX.Math.Round(tonumber(v), 1))
-        end
+	if vehicleProps.windows then
+		for id = 0, 7 do
+			if vehicleProps.windows[id + 1] == true then
+				SmashVehicleWindow(vehicle, id)
+			end
+		end
 	end
 	if vehicleProps.doors then
-		for doorId = 0, 5, 1 do
-			if vehicleProps.doors[doorId + 1] == true then
-				SetVehicleDoorBroken(vehicle, doorId, true)
+		for id = 0, 5 do
+			if vehicleProps.doors[id + 1] == true then
+				SetVehicleDoorBroken(vehicle, id, true)
 			end
 		end
 	end
@@ -141,26 +145,26 @@ end
 exports("SetVehicleProperties", SetVehicleProperties)
 
 GetVehicleProperties = function(vehicle)
-    if DoesEntityExist(vehicle) then
-        local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
-        vehicleProps.tyres = {}
-        vehicleProps.windows = {}
-        vehicleProps.doors = {}
-        for id = 0, 7,1 do
-            vehicleProps.tyres[id] = GetTyreHealth(vehicle, id)
-        end
+	if DoesEntityExist(vehicle) then
+		local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
+		vehicleProps.tyres = {}
+		vehicleProps.windows = {}
+		vehicleProps.doors = {}
+		for id = 0, 7 do
+			vehicleProps.tyres[id + 1] = GetTyreHealth(vehicle, id)
+		end
 
-        for id = 0, 7,1 do
-            vehicleProps.windows[id + 1] = not IsVehicleWindowIntact(vehicle, id)
-        end
+		for id = 0, 7 do
+			vehicleProps.windows[id + 1] = not IsVehicleWindowIntact(vehicle, id)
+		end
 
-        for id = 0, 5,1 do
-            vehicleProps.doors[id + 1] = IsVehicleDoorDamaged(vehicle, id) == 1
-        end
+		for id = 0, 5 do
+			vehicleProps.doors[id + 1] = IsVehicleDoorDamaged(vehicle, id) == 1
+		end
 		vehicleProps.vehicleHeadLight = GetVehicleHeadlightsColour(vehicle)
-        return vehicleProps
+		return vehicleProps
 	else
 		return nil
-    end
+	end
 end
 exports("GetVehicleProperties", GetVehicleProperties)

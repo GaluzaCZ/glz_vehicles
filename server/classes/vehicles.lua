@@ -107,8 +107,8 @@ end
 vehicles.source.get = function(source)
 	local vehs = {}
 	if not vehicles.source.is(source) then return vehs end
-	for i, v in ipairs(self.source[source]) do
-		table.insert(vehs, vehicles.plate.get(v))
+	for i = 1, #self.source[source] do
+		vehs[#vehs+1] = vehicles.plate.get(self.source[source][i])
 	end
 	return vehs
 end
@@ -123,8 +123,8 @@ end
 
 vehicles.source.has = function(source, plate)
 	if not vehicles.source.is(source) then return false end
-	for i, v in ipairs(self.source[source]) do
-		if v == plate then
+	for i = 1, #self.source[source] do
+		if self.source[source][i] == plate then
 			return true
 		end
 	end
@@ -137,7 +137,7 @@ vehicles.source.add = function(source, plate)
 		self.source[source] = {}
 	end
 
-	table.insert(self.source[source], plate)
+	self.source[source][#self.source[source]+1] = plate
 end
 
 vehicles.source.remove = function(source, plate)
@@ -146,9 +146,9 @@ vehicles.source.remove = function(source, plate)
 		return true
 	end
 	if not vehicles.source.is(source) then return false end
-	for i, v in ipairs(self.source[source]) do
-		if v == plate then
-			table.remove(self.source[source], i)
+	for i = 1, #self.source[source] do
+		if self.source[source][i] == plate then
+			self.source[source][i] = nil
 			return true
 		end
 	end
@@ -157,10 +157,10 @@ end
 
 vehicles.source.removeUnused = function() -- Don't use this function, idk if it's working
 	for source in pairs(self.source) do
-		local players = ESX.GetPlayers()
 		local continue = false
-		for i, src in ipairs(players) do
-			if src == source then
+		local players = GetPlayers()
+		for i = 1, #players do
+			if players[i] == source then
 				continue = true
 				break
 			end
@@ -175,8 +175,8 @@ end
 vehicles.job.get = function(job)
 	local vehs = {}
 	if not vehicles.job.is(job) then return vehs end
-	for i, v in ipairs(self.job[job]) do
-		table.insert(vehs, vehicles.plate.get(v))
+	for i = 1, #self.job[job] do
+		vehs[#vehs + 1] = vehicles.plate.get(self.job[job][i])
 	end
 	return vehs
 end
@@ -191,8 +191,8 @@ end
 
 vehicles.job.has = function(job, plate)
 	if not vehicles.job.is(job) then return false end
-	for i, v in ipairs(self.job[job]) do
-		if v == plate then
+	for i = 1, #self.job[job] do
+		if self.job[job][i] == plate then
 			return true
 		end
 	end
@@ -205,7 +205,7 @@ vehicles.job.add = function(job, plate)
 		self.job[job] = {}
 	end
 
-	table.insert(self.job[job], plate)
+	self.job[job][#self.job[job]+1] = plate
 end
 
 vehicles.job.remove = function(job, plate)
@@ -214,9 +214,9 @@ vehicles.job.remove = function(job, plate)
 		return true
 	end
 	if not vehicles.job.is(job) then return false end
-	for i, v in ipairs(self.job[job]) do
-		if v == plate then
-			table.remove(self.job[job], i)
+	for i = 1, #self.job[job] do
+		if self.job[job][i] == plate then
+			self.job[job][i] = nil
 			return true
 		end
 	end

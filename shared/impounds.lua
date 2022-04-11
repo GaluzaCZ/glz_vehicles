@@ -21,8 +21,8 @@ Impounds = {
 	}
 }
 
-for i, v in ipairs(Impounds) do
-	if not v.name then
+for i = 1, #Impounds do
+	if not Impounds[i].name then
 		Impounds[i].name = "Impound" .. i
 	end
 end

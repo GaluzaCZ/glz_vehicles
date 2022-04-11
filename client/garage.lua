@@ -26,7 +26,8 @@ CreateThread(function()
 		PPed = PlayerPedId()
 		local sleep = 500 -- save energy
 
-		for i,v in ipairs(Positions) do
+		for i = 1, #Positions do
+			local v = Positions[i]
 			local pedCoords = GetEntityCoords(PPed)
 			local distance = #(pedCoords - v.pos)
 
@@ -60,7 +61,8 @@ end)
 
 AddEventHandler('glz_veh:init', function()
 	if Config.Garages.Enabled then
-		for i, v in ipairs(Config.Garages.Garages) do
+		for i = 1, #Config.Garages.Garages do
+			local v = Config.Garages.Garages[i]
 			CreateBlip(v.name, _("garage_blip_name"), v.pos, Config.Garages.Blip)
 
 			local pos = {
@@ -71,7 +73,7 @@ AddEventHandler('glz_veh:init', function()
 				heading = v.heading,
 				pos = v.pos
 			}
-			table.insert(Positions, pos)
+			Positions[#Positions+1] = pos
 
 			local pos2 = {
 				marker = Config.Garages.DespawnMarker,
@@ -79,12 +81,13 @@ AddEventHandler('glz_veh:init', function()
 				data = "despawn",
 				pos = v.despawn
 			}
-			table.insert(Positions, pos2)
+			Positions[#Positions+1] = pos2
 		end
 	end
 
 	if Config.Impounds.Enabled then
-		for i, v in ipairs(Config.Impounds.Impounds) do
+		for i = 1, #Config.Impounds.Impounds do
+			local v = Config.Impounds.Impounds[i]
 			CreateBlip(v.name, _U("impound_blip_name"), v.pos, Config.Impounds.Blip)
 
 			local pos = {
@@ -95,7 +98,7 @@ AddEventHandler('glz_veh:init', function()
 				heading = v.heading,
 				pos = v.pos
 			}
-			table.insert(Positions, pos)
+			Positions[#Positions+1] = pos
 		end
 	end
 end)
@@ -131,9 +134,10 @@ function OpenImpoundMenu()
 	local impData = currentData
 	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
 		local elements = {}
-		for i, v in ipairs(vehicles) do
+		for i = 1, #vehicles do
+			local v = vehicles[i]
 			if v.stored == 0 or v.garage_name == nil then
-				table.insert(elements,{label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span> - <span style="color:Green">$'..Config.Impounds.Cost..'</span>', value=v})
+				elements[#elements+1] = {label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span> - <span style="color:Green">$'..Config.Impounds.Cost..'</span>', value=v}
 			end
 		end
 
