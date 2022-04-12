@@ -1,7 +1,9 @@
 # ! This script can be used however, it is still under development !
 # Vehicle framework for ESX Legacy
-## [Download](/releases/latest)
+## [Download](https://github.com/GaluzaCZ/glz_vehicles/releases/latest)
+
 This script is for development!
+
 Server side events and callbacks are [here](./server/events.lua), client side is [here](./client/events.lua).
 Exports are [here](./client/utils.lua)
 
