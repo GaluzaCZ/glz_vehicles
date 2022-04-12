@@ -2,9 +2,10 @@ fx_version 'cerulean'
 game 'gta5'
 
 name "glz_vehicles"
-description "Vehicle system for better working with vehicles"
+description "Vehicle framework for better working with vehicles"
 author "GalužaCZ#8828"
-version "Alpha"
+repository 'https://github.com/GaluzaCZ/glz_vehicles'
+version "0.1"
 
 lua54 'yes'
 
