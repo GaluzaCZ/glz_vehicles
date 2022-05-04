@@ -22,8 +22,8 @@ if Config.CarLock.Enabled then
 				SetVehicleDoorsLocked(v, 2)
 				PlayVehicleDoorCloseSound(v, 1)
 
-				if IsPedOnFoot(PPed) then
-					TaskPlayAnim(PPed, dict, "fob_click_fp", 8.0, 8.0, -1, 48, 1, false, false, false)
+				if IsPedOnFoot(ESX.PlayerData.ped) then
+					TaskPlayAnim(ESX.PlayerData.ped, dict, "fob_click_fp", 8.0, 8.0, -1, 48, 1, false, false, false)
 				end
 
 				pNotify(_U("vehicle_locked"),"success")
@@ -32,8 +32,8 @@ if Config.CarLock.Enabled then
 				SetVehicleDoorsLocked(v, 1)
 				PlayVehicleDoorOpenSound(v, 0)
 
-				if IsPedOnFoot(PPed) then
-					TaskPlayAnim(PPed, dict, "fob_click_fp", 8.0, 8.0, -1, 48, 1, false, false, false)
+				if IsPedOnFoot(ESX.PlayerData.ped) then
+					TaskPlayAnim(ESX.PlayerData.ped, dict, "fob_click_fp", 8.0, 8.0, -1, 48, 1, false, false, false)
 				end
 
 				pNotify(_U("vehicle_unlocked"),"warning")
@@ -42,9 +42,8 @@ if Config.CarLock.Enabled then
 		end
 
 		ToggleLock = function()
-			local coords = GetEntityCoords(PPed)
+			local coords = GetEntityCoords(ESX.PlayerData.ped)
 			local cars = ESX.Game.GetVehiclesInArea(coords, Config.CarLock.Distance)
-			print(#cars)
 			if #cars == 0 then return pNotify(_U("no_cars_in_radius"),"info") end
 
 			table.sort(cars, function(a, b)
@@ -74,5 +73,11 @@ if Config.CarLock.Enabled then
 			end
 			pNotify(_U("no_owned_cars_in_radius"),"info")
 		end
+
+		RegisterCommand(Config.CarLock.Command, function()
+			ToggleLock()
+		end, false)
+
+		RegisterKeyMapping(Config.CarLock.Command, "Lock/Unlock your vehicle", "keyboard", Config.CarLock.Key)
 	end)
 end

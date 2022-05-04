@@ -15,6 +15,7 @@ dependencies {
 }
 
 shared_scripts {
+	'@es_extended/imports.lua',
 	'@es_extended/locale.lua',
 	'locales/*.lua',
 	'shared/*.lua',
@@ -24,15 +25,24 @@ shared_scripts {
 server_scripts {
 	'@mysql-async/lib/MySQL.lua',
 	'server/classes/vehicles.lua',
+	'server/functions.lua',
+	'server/events.lua',
 	'server/main.lua',
-	'server/events.lua'
 }
 
 client_scripts {
+	'client/functions.lua',
 	'client/utils.lua',
-	'client/garage.lua',
-	'client/main.lua',
 	'client/events.lua',
+
+
+	--[[ Comment out what u dont need ]]
+	'client/garage.lua',
 	'client/commands.lua',
-	'client/carlock.lua'
+	'client/carlock.lua',
+	'client/radialmenu.lua',
+	--[[ ---------------------------- ]]
+
+
+	'client/main.lua',
 }

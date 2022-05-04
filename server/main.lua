@@ -1,8 +1,5 @@
--- Global vars
-ESX = exports.es_extended:getSharedObject()
-
 -- ESX events
-AddEventHandler('esx:setJob', function(source, job, lastJob)
+AddEventHandler('esx:setJob', function(source, job)
 	if not vehicles.job.is(job.name) then
 		local xPlayer = ESX.GetPlayerFromId(source)
 		local result = LoadVehiclesFromDatabase(xPlayer, false, true)
@@ -20,21 +17,14 @@ AddEventHandler('esx:setJob', function(source, job, lastJob)
 	vehicles.plate.removeUnused()
 end)
 
-AddEventHandler('esx:playerLoaded', function(source, xPlayer)
-	InitPlayer(source)
-end)
-
 AddEventHandler('esx:playerLogout', function(source)
 	vehicles.source.remove(source)
 	vehicles.plate.removeUnused()
 end)
 
+--[[ Initialize ]]
 InitPlayer = function(source)
 	local xPlayer = ESX.GetPlayerFromId(source)
-	while xPlayer == nil do
-		xPlayer = ESX.GetPlayerFromId(source)
-		Wait(1000)
-	end
 	local job = false
 	local result
 
@@ -64,18 +54,9 @@ InitPlayer = function(source)
 	end
 end
 
--- Insert function
-InsertVehicle = function(where, vehicle, xPlayer, override)
-	if where == "source" then
-		vehicles.source.add(xPlayer.source, vehicle.plate)
-	elseif where == "job" then
-		vehicles.job.add(xPlayer.job.name, vehicle.plate)
-	end
-
-	if not vehicles.plate.is(vehicle.plate) or override then
-		vehicles.plate.add(vehicle)
-	end
-end
+RegisterNetEvent('glz_veh:init', function()
+	InitPlayer(source)
+end)
 
 LoadVehiclesFromDatabase = function(xPlayer, loadPlayer, loadJob)
 	local result
@@ -106,6 +87,6 @@ RemoveVehicleFromDatabase = function(plate)
 	MySQL.Async.execute('DELETE FROM owned_vehicles WHERE plate = ?', {plate})
 end
 
-RegisterNetEvent('glz_veh:restart', function()
-	InitPlayer(source)
-end)
+CheckVehicleInDatabase = function(plate)
+	return MySQL.Sync.fetchScalar('SELECT owner FROM owned_vehicles WHERE plate = ?', {plate})
+end

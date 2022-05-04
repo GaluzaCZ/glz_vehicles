@@ -6,12 +6,24 @@ Config.DrawDistance = 50 -- Distance which marker will show
 
 Config.SwitchVehicleJobCommand = "switchvehiclejob"
 
+Config.PlateTemplate = "NNN LLL" -- N = number L = letter
+
+Config.LegacyFuel = true
+
 ------------------------------- CarLock config --------------------------------
 Config.CarLock = {
 	Enabled = true,
 	Command = "carlock", -- Its needed for KeyMapping
 	Key = "u", -- https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/
 	Distance = 30
+}
+
+------------------------------- RadialMenu config --------------------------------
+Config.RadialMenu = {
+	Enabled = true,
+	Command = "radialmenu-veh", -- Its needed for KeyMapping
+	Key = "F5", -- https://docs.fivem.net/docs/game-references/input-mapper-parameter-ids/keyboard/
+	Menu = MenuItems
 }
 
 ------------------------------- Garage config ---------------------------------

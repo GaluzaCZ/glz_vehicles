@@ -23,12 +23,11 @@ end
 --Draw markers and their stuff
 CreateThread(function()
 	while true do
-		PPed = PlayerPedId()
 		local sleep = 500 -- save energy
 
 		for i = 1, #Positions do
 			local v = Positions[i]
-			local pedCoords = GetEntityCoords(PPed)
+			local pedCoords = GetEntityCoords(ESX.PlayerData.ped)
 			local distance = #(pedCoords - v.pos)
 
 			if distance < Config.DrawDistance then
@@ -104,7 +103,7 @@ AddEventHandler('glz_veh:init', function()
 end)
 
 PlayerInMarker = function(data)
-	if data == "garage" and not IsPedInAnyVehicle(PPed, true) and not opened then
+	if data == "garage" and not IsPedInAnyVehicle(ESX.PlayerData.ped, true) and not opened then
 		ESX.ShowHelpNotification(_U("press_menu"))
 		if IsControlJustReleased(0,38) then
 			opened = true
@@ -112,7 +111,7 @@ PlayerInMarker = function(data)
 		end
 	end
 
-	if data == "impound" and not IsPedInAnyVehicle(PPed, true) and not opened then
+	if data == "impound" and not IsPedInAnyVehicle(ESX.PlayerData.ped, true) and not opened then
 		ESX.ShowHelpNotification(_U("press_menu"))
 		if IsControlJustReleased(0,38) then
 			opened = true
@@ -120,11 +119,11 @@ PlayerInMarker = function(data)
 		end
 	end
 
-	if data == "despawn" and IsPedInAnyVehicle(PPed, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(PPed), -1) == PPed and not opened then
+	if data == "despawn" and IsPedInAnyVehicle(ESX.PlayerData.ped, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(ESX.PlayerData.ped), -1) == ESX.PlayerData.ped and not opened then
 		ESX.ShowHelpNotification(_U("press_despawn"))
 		if IsControlJustReleased(0,38) then
 			opened = true
-			StoreVehicle(GetVehiclePedIsIn(PPed,false), currentData.name)
+			StoreVehicle(GetVehiclePedIsIn(ESX.PlayerData.ped,false), currentData.name)
 		end
 	end
 end
@@ -147,9 +146,9 @@ function OpenImpoundMenu()
 					ESX.TriggerServerCallback("glz_veh:payForImpound", function(paid)
 						if paid then
 							ESX.Game.SpawnVehicle(data.current.value.vehicle.model, impData.spawn, impData.heading, function(callback_vehicle)
-								TriggerServerEvent("glz_veh:setVehicleSpawn", data.current.value.plate)
+								TriggerServerEvent("glz_veh:vehicleSpawn", data.current.value.plate)
 								SetVehicleProperties(callback_vehicle, data.current.value.vehicle)
-								SetPedIntoVehicle(PPed, callback_vehicle, -1)
+								SetPedIntoVehicle(ESX.PlayerData.ped, callback_vehicle, -1)
 							end)
 							menu.close()
 						else

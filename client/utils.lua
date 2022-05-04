@@ -1,3 +1,13 @@
+function pNotify(text,type,time)
+	local options = {
+	  text = text,
+	  timeout = time or 2000,
+	  type = type
+	}
+
+	exports.pNotify:SendNotification(options)
+end
+
 OpenMenu = function(name, vehicles, cb, cb2)
 	local elements = {}
 	if not vehicles[1] then
@@ -16,106 +26,6 @@ OpenMenu = function(name, vehicles, cb, cb2)
 	end)
 end
 exports("OpenMenu", OpenMenu)
-
-OpenGarageMenu = function(garageName, pos, heading, type, cb)
-	ESX.TriggerServerCallback("glz_veh:getPlayerVehicles", function(vehicles)
-		local elements = {}
-		type = type or "car"
-		if vehicles[1] then
-			for i = 1, #vehicles do
-				local v = vehicles[i]
-				if v.stored == 1 and v.garage_name == garageName and v.type == type then
-					elements[#elements+1] = {label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v}
-				end
-			end
-		end
-
-		OpenMenu("Garage", elements, function(data, menu)
-			if data.current.value then
-				if ESX.Game.IsSpawnPointClear(pos, 3.0) then
-					ESX.Game.SpawnVehicle(data.current.value.vehicle.model, pos, heading, function(callback_vehicle)
-						TriggerServerEvent("glz_veh:setVehicleSpawn", data.current.value.plate)
-						SetVehicleProperties(callback_vehicle, data.current.value.vehicle)
-						SetPedIntoVehicle(PPed, callback_vehicle, -1)
-						if cb then
-							cb()
-						end
-					end)
-					menu.close()
-				else
-					pNotify(_U("spawnpoint_not_clear"), "warning")
-				end
-			end
-		end)
-	end)
-end
-exports("OpenGarageMenu", OpenGarageMenu)
-
-OpenJobGarageMenu = function(job, garageName, pos, heading, type, cb)
-	ESX.TriggerServerCallback("glz_veh:getJobVehicles", function(vehicles)
-		local elements = {}
-		type = type or "car"
-		if vehicles[1] then
-			for i = 1, #vehicles do
-				local v = vehicles[i]
-				if v.stored == 1 and v.garage_name == garageName and v.job == job and v.type == type then
-					elements[#elements+1] = {label = '<span style="color:Green">'..v.vehiclename..'</span> - <span style="color:GoldenRod">'..v.plate..'</span>', value=v}
-				end
-			end
-		end
-
-		OpenMenu("Garage", elements, function(data, menu)
-			if data.current.value then
-				if ESX.Game.IsSpawnPointClear(pos, 3.0) then
-					ESX.Game.SpawnVehicle(data.current.value.vehicle.model, pos, heading, function(callback_vehicle)
-						TriggerServerEvent("glz_veh:setVehicleSpawn", data.current.value.plate)
-						SetVehicleProperties(callback_vehicle, data.current.value.vehicle)
-						SetPedIntoVehicle(PPed, callback_vehicle, -1)
-					end)
-					menu.close()
-					if cb then
-						cb()
-					end
-				else
-					pNotify(_U("spawnpoint_not_clear"), "warning")
-				end
-			end
-		end)
-	end, job)
-end
-exports("OpenJobGarageMenu", OpenJobGarageMenu)
-
-StoreVehicle = function(vehicle, garageName, cb)
-	local vehicleProps = GetVehicleProperties(vehicle)
-	ESX.TriggerServerCallback("glz_veh:hasPlayerVehicleByPlate", function(has)
-		if has then
-			ESX.Game.DeleteVehicle(vehicle)
-			TriggerServerEvent("glz_veh:vehicleDespawn", vehicleProps.plate, vehicleProps, garageName)
-			if cb then
-				cb()
-			end
-		else
-			pNotify(_U("not_owned"), "error")
-		end
-	end, vehicleProps.plate)
-end
-exports("StoreVehicle", StoreVehicle)
-
-StoreJobVehicle = function(vehicle, job, garageName, cb)
-	local vehicleProps = GetVehicleProperties(vehicle)
-	ESX.TriggerServerCallback("glz_veh:getVehicleByPlate", function(Vehicle)
-		if Vehicle and Vehicle.job == job then
-			ESX.Game.DeleteVehicle(vehicle)
-			TriggerServerEvent("glz_veh:vehicleDespawn", vehicleProps.plate, vehicleProps, garageName)
-			if cb then
-				cb()
-			end
-		else
-			pNotify(_U("cannot_store"), "error")
-		end
-	end, vehicleProps.plate)
-end
-exports("StoreJobVehicle", StoreJobVehicle)
 
 SetVehicleProperties = function(vehicle, vehicleProps)
 	ESX.Game.SetVehicleProperties(vehicle, vehicleProps)
@@ -141,30 +51,79 @@ SetVehicleProperties = function(vehicle, vehicleProps)
 		end
 	end
 	if vehicleProps.vehicleHeadLight then SetVehicleHeadlightsColour(vehicle, vehicleProps.vehicleHeadLight) end
+	if Config.LegacyFuel and vehicleProps.fuelLevel then exports.LegacyFuel:SetFuel(vehicle, vehicleProps.fuelLevel) end
 end
 exports("SetVehicleProperties", SetVehicleProperties)
 
 GetVehicleProperties = function(vehicle)
-	if DoesEntityExist(vehicle) then
-		local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
-		vehicleProps.tyres = {}
-		vehicleProps.windows = {}
-		vehicleProps.doors = {}
-		for id = 0, 7 do
-			vehicleProps.tyres[id + 1] = GetTyreHealth(vehicle, id)
-		end
+	if not DoesEntityExist(vehicle) then return nil end
 
-		for id = 0, 7 do
-			vehicleProps.windows[id + 1] = not IsVehicleWindowIntact(vehicle, id)
-		end
-
-		for id = 0, 5 do
-			vehicleProps.doors[id + 1] = IsVehicleDoorDamaged(vehicle, id) == 1
-		end
-		vehicleProps.vehicleHeadLight = GetVehicleHeadlightsColour(vehicle)
-		return vehicleProps
-	else
-		return nil
+	local vehicleProps = ESX.Game.GetVehicleProperties(vehicle)
+	vehicleProps.tyres = {}
+	vehicleProps.windows = {}
+	vehicleProps.doors = {}
+	for id = 0, 7 do
+		vehicleProps.tyres[id + 1] = GetTyreHealth(vehicle, id)
 	end
+	for id = 0, 7 do
+		vehicleProps.windows[id + 1] = not IsVehicleWindowIntact(vehicle, id)
+	end
+	for id = 0, 5 do
+		vehicleProps.doors[id + 1] = IsVehicleDoorDamaged(vehicle, id) == 1
+	end
+	vehicleProps.vehicleHeadLight = GetVehicleHeadlightsColour(vehicle)
+
+	if Config.LegacyFuel then vehicleProps.fuelLevel = exports.LegacyFuel:GetFuel(vehicle) end
+	return vehicleProps
 end
 exports("GetVehicleProperties", GetVehicleProperties)
+
+ToggleEngine = function()
+	if IsPedInAnyVehicle(ESX.PlayerData.ped, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(ESX.PlayerData.ped), -1) == ESX.PlayerData.ped then
+		local vehicle = GetVehiclePedIsIn(ESX.PlayerData.ped,false)
+		SetVehicleEngineOn(vehicle, GetIsVehicleEngineRunning(vehicle) ~= 1, false, true)
+	end
+end
+exports("ToggleEngine", ToggleEngine)
+
+ToggleDoor = function(doorId)
+	if IsPedInAnyVehicle(ESX.PlayerData.ped, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(ESX.PlayerData.ped), -1) == ESX.PlayerData.ped then
+		local vehicle = GetVehiclePedIsIn(ESX.PlayerData.ped,false)
+		if GetVehicleDoorAngleRatio(vehicle, tonumber(doorId)) > 0.1 then
+			SetVehicleDoorShut(vehicle, tonumber(doorId), false)
+		else
+			SetVehicleDoorOpen(vehicle, tonumber(doorId), false, false)
+		end
+	end
+end
+exports("ToggleDoor", ToggleDoor)
+
+local neons = {
+	vehicle = nil,
+	toggle = false,
+	has = false
+}
+ToggleNeons = function()
+	if IsPedInAnyVehicle(ESX.PlayerData.ped, true) and GetPedInVehicleSeat(GetVehiclePedIsIn(ESX.PlayerData.ped), -1) == ESX.PlayerData.ped then
+		local vehicle = GetVehiclePedIsIn(ESX.PlayerData.ped,false)
+		if vehicle ~= neons.vehicle or not neons.has then
+			neons = {
+				vehicle = vehicle,
+				toggle = false,
+				has = false
+			}
+			for i = 0, 3 do
+				if IsVehicleNeonLightEnabled(vehicle, i) == 1 then
+					neons.has = true
+					neons.toggle = true
+					break
+				end
+			end
+		end
+		if neons.has then
+			DisableVehicleNeonLights(vehicle, neons.toggle)
+			neons.toggle = not neons.toggle
+		end
+	end
+end
+exports("ToggleNeons", ToggleNeons)

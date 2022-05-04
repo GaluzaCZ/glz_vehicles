@@ -1,54 +1,30 @@
 local MainRun = false -- Make sure to run the main function once
-ESX = nil
-PPed = PlayerPedId()
-xPlayer = {}
 
 -- ESX events
 RegisterNetEvent('esx:playerLoaded', function(playerData)
-	xPlayer = playerData
+	ESX.PlayerData = playerData
 	if not MainRun then
 		Main()
 	end
 end)
 
 RegisterNetEvent('esx:setJob', function(job)
-	xPlayer.job = job
-end)
-
-RegisterNetEvent('esx:setPlayerData', function(k, v)
-	xPlayer[k] = v
+	ESX.PlayerData.job = job
 end)
 
 Main = function()
 	MainRun = true
 
-	-- load ESX to client
-	ESX = exports.es_extended:getSharedObject()
-	while ESX == nil do
-		ESX = exports.es_extended:getSharedObject()
-		Wait(0)
-	end
-	if not xPlayer then
-		xPlayer = ESX.GetPlayerData()
-	end
-
+	Wait(500)
 	-- initialize
+	TriggerServerEvent('glz_veh:init')
 	TriggerEvent('glz_veh:init')
 end
 
-Citizen.CreateThread(function()
-	if not MainRun then
-		TriggerServerEvent("glz_veh:restart")
-		Main()
+CreateThread(function()
+	if not MainRun and GetResourceState("es_extended") == "started" then
+		if ESX.IsPlayerLoaded() then
+			Main()
+		end
 	end
 end)
-
-function pNotify(text,type,time)
-	local options = {
-	  text = text,
-	  timeout = time or 2000,
-	  type = type
-	}
-
-	exports.pNotify:SendNotification(options)
-end
