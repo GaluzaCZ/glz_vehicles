@@ -4,9 +4,10 @@
 
 This script is for development!
 
-Server side events and callbacks are [here](./server/events.lua), client side is [here](./client/events.lua).
-Exports for client are [here](./client/utils.lua) and [here](./client/functions.lua)
-Exports for server are [here](./server/functions.lua)
+- Exports for client are [here](./client/utils.lua) and [here](./client/functions.lua)
+- Exports for server are [here](./server/functions.lua)
+- Server side events and callbacks are [here](./server/events.lua)
+- Server side events and callbacks are [here](./client/events.lua)
 
 ## Dependencies
 - [ESX legacy](https://github.com/esx-framework/esx-legacy)
