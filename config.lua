@@ -8,7 +8,7 @@ Config.SwitchVehicleJobCommand = "switchvehiclejob"
 
 Config.PlateTemplate = "NNN LLL" -- N = number L = letter
 
-Config.LegacyFuel = true
+Config.LegacyFuel = false
 
 ------------------------------- CarLock config --------------------------------
 Config.CarLock = {

@@ -78,7 +78,7 @@ end
 
 vehicles.plate.changePlate = function(vehicle, newPlate)
 	if vehicles.plate.is(newPlate) then return false end
-	if vehicle.plate == newPlate then return false end
+	if vehicle.plate == newPlate then return true end
 	vehciels.plate.remove(vehicle)
 	vehicle.plate = newPlate
 	vehicles.plate.add(vehicle)
@@ -231,3 +231,13 @@ vehicles.job.removeUnused = function()
 	   end
 	end
 end
+
+exports("getPlateObject", function()
+	return vehicles.plate
+end)
+exports("getSourceObject", function()
+	return vehicles.source
+end)
+exports("getJobObject", function()
+	return vehicles.job
+end)

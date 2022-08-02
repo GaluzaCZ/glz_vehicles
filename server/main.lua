@@ -76,7 +76,7 @@ LoadVehiclesFromDatabase = function(xPlayer, loadPlayer, loadJob)
 end
 
 SaveNewVehicleToDatabase = function(vehicle)
-	MySQL.Async.insert('INSERT INTO owned_vehicles (owner, plate, vehicle, vehiclename) VALUES (?, ?, ?, ?) ', {vehicle.owner, vehicle.plate, json.encode(vehicle.vehicle), vehicle.vehiclename})
+	MySQL.Async.insert('INSERT INTO owned_vehicles (owner, plate, vehicle, job, stored, garage_name, vehiclename) VALUES (?, ?, ?, ?, ?, ?, ?) ', {vehicle.owner, vehicle.plate, json.encode(vehicle.vehicle), vehicle.job, vehicle.stored, vehicle.garage_name, vehicle.vehiclename})
 end
 
 UpdateVehicleInDatabase = function(vehicle)

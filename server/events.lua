@@ -43,12 +43,15 @@ RegisterNetEvent('glz_veh:vehicleDespawn', function(plate, vehicleProps, garage)
 	VehicleDespawn(plate, vehicleProps, garage)
 end)
 
-RegisterNetEvent('glz_veh:setVehicle', function(vehicle)
-	SetVehicle(vehicle)
-end)
-
 RegisterNetEvent('glz_veh:deleteVehicle', function(plate)
-	DeleteVehiclePlate(source, plate)
+	local _source = source
+	if vehicles.plate.is(plate) then
+		local xPlayer = ESX.GetPlayerFromId(_source)
+		local vehicle = vehicles.plate.get(plate)
+		if vehicle.owner == xPlayer.identifier then
+			DeleteVehiclePlate(plate)
+		end
+	end
 end)
 
 RegisterNetEvent('glz_veh:setVehiclePropsOwned', function(vehicleProps, plate, vehName)

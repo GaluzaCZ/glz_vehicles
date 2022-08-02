@@ -31,23 +31,33 @@ SetVehicle = function(vehicle)
 end
 exports("SetVehicle", SetVehicle)
 
+_CreateVehicle = function(vehicle)
+	if not vehicles.plate.is(vehicle.plate) then
+		vehicles.plate.add(vehicle)
+		local xPlayer = ESX.GetPlayerFromIdentifier(vehicle.owner)
+		if xPlayer then
+			vehicles.source.add(xPlayer.source, vehicle.plate)
+		end
+		if #ESX.GetExtendedPlayers("job", vehicle.job) > 0 then
+			vehicles.job.add(vehicle.job, vehicle.plate)
+		end
+		SaveNewVehicleToDatabase(vehicle)
+	end
+end
+exports("CreateVehicle", _CreateVehicle)
+
 DeleteVehiclePlate = function(source, plate)
 	if not source and not plate then return false end
 	if vehicles.plate.is(plate) then
-		local xPlayer = ESX.GetPlayerFromId(source)
 		local vehicle = vehicles.plate.get(plate)
-		if vehicle.owner == xPlayer.identifier then
-			vehicles.source.remove(source, vehicle.plate)
-			if vehicle.job then
-				vehicles.job.remove(xPlayer.job.name, vehicle.plate)
-			end
-
-			vehicles.plate.remove(vehicle.plate)
-			RemoveVehicleFromDatabase(vehicle.plate)
-			return true
-		else
-			return false
+		vehicles.source.remove(source, vehicle.plate)
+		if vehicle.job then
+			vehicles.job.remove(vehicle.job, vehicle.plate)
 		end
+
+		vehicles.plate.remove(vehicle.plate)
+		RemoveVehicleFromDatabase(vehicle.plate)
+		return true
 	else
 		return false
 	end
@@ -70,7 +80,7 @@ SetVehiclePropsOwned = function(source, vehicleProps, plate, vehName)
 	vehicles.plate.add(vehicle)
 
 	SaveNewVehicleToDatabase(vehicle)
-	return true
+	return vehicles.plate.get(plate)
 end
 exports("SetVehiclePropsOwned", SetVehiclePropsOwned)
 

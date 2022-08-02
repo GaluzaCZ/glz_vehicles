@@ -51,6 +51,7 @@ SetVehicleProperties = function(vehicle, vehicleProps)
 		end
 	end
 	if vehicleProps.vehicleHeadLight then SetVehicleHeadlightsColour(vehicle, vehicleProps.vehicleHeadLight) end
+	if vehicleProps.red and vehicleProps.green and vehicleProps.blue then SetVehicleCustomPrimaryColour(vehicle, vehicleProps.red, vehicleProps.green, vehicleProps.blue) end
 	if Config.LegacyFuel and vehicleProps.fuelLevel then exports.LegacyFuel:SetFuel(vehicle, vehicleProps.fuelLevel) end
 end
 exports("SetVehicleProperties", SetVehicleProperties)
@@ -72,6 +73,7 @@ GetVehicleProperties = function(vehicle)
 		vehicleProps.doors[id + 1] = IsVehicleDoorDamaged(vehicle, id) == 1
 	end
 	vehicleProps.vehicleHeadLight = GetVehicleHeadlightsColour(vehicle)
+	vehicleProps.red, vehicleProps.green, vehicleProps.blue = GetVehicleCustomPrimaryColour(vehicle)
 
 	if Config.LegacyFuel then vehicleProps.fuelLevel = exports.LegacyFuel:GetFuel(vehicle) end
 	return vehicleProps
