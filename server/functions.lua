@@ -64,7 +64,7 @@ DeleteVehiclePlate = function(source, plate)
 end
 exports("DeleteVehiclePlate", DeleteVehiclePlate)
 
-SetVehiclePropsOwned = function(source, vehicleProps, plate, vehName)
+SetVehiclePropsOwned = function(source, vehicleProps, plate, vehName, type)
 	if not source and not vehicleProps and not plate and not vehName then return false end
 	local xPlayer = ESX.GetPlayerFromId(source)
 
@@ -72,6 +72,7 @@ SetVehiclePropsOwned = function(source, vehicleProps, plate, vehName)
 		owner = xPlayer.identifier,
 		plate = plate,
 		vehicle = vehicleProps,
+		type = type or "car",
 		vehiclename = vehName,
 		stored = 0
 	}
